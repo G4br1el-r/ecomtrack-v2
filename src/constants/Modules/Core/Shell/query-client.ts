@@ -1,0 +1,4 @@
+const ONE_MINUTE_IN_MS = 60_000;
+
+export const QUERY_STALE_TIME_MS = ONE_MINUTE_IN_MS;
+export const QUERY_RETRY_COUNT = 1;
