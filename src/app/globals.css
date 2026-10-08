@@ -47,6 +47,8 @@
   --color-status-teal: var(--status-teal);
   --color-status-teal-soft: var(--status-teal-soft);
   --color-overlay: var(--overlay);
+  --color-brand-from: var(--brand-from);
+  --color-brand-to: var(--brand-to);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -117,6 +119,8 @@
   --status-teal-soft: oklch(0.953 0.051 180.801);
 
   --overlay: oklch(0.145 0.005 285.823 / 0.72);
+  --brand-from: oklch(0.452 0.152 262.4);
+  --brand-to: oklch(0.668 0.158 252.6);
   --border: oklch(0.922 0.004 286.32);
   --input: oklch(0.89 0.005 286.3);
   --ring: oklch(0.546 0.245 262.881);

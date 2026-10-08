@@ -4,10 +4,12 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import type { PagedFilters } from "@/@types/Modules/Core/Api/paged-filters";
 import { PROFILES_LIST_QUERY_KEY } from "@/constants/Modules/Administracao/Usuarios/users";
+import { QUERY_CACHE_POLICY } from "@/constants/Modules/Core/Api/query-cache-policies";
 import { listProfiles } from "@/services/Modules/Administracao/Usuarios/list-profiles";
 
 export function useProfiles(filters: PagedFilters) {
   return useQuery({
+    ...QUERY_CACHE_POLICY.reference,
     queryKey: [...PROFILES_LIST_QUERY_KEY, filters],
     queryFn: () => listProfiles(filters),
     placeholderData: keepPreviousData,

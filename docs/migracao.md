@@ -104,7 +104,7 @@ Componentes do Lovable ficam em `src/components/<pasta>`; a coluna "Pastas" list
 | Status | Página Lovable | Linhas | Rota Lovable | Rota v2 | Pastas | Observação |
 |---|---|---:|---|---|---|---|
 | ✅ | `Login` | 345 | `/login` | `/login` | — | login real em duas etapas (código por e-mail, 6 quadradinhos), proxy e sessão renovada |
-| ✅ | `EsqueciSenha` | 80 | `/esqueci-senha` | `/esqueci-senha` | — | `POST /auth/password/forgot` |
+| ✅ | `EsqueciSenha` | 80 | `/esqueci-senha` | `/login?etapa=esqueci-senha` | — | `POST /auth/password/forgot`; virou etapa do `/login` (troca no mesmo lugar); `/esqueci-senha` redireciona |
 | ✅ | `RedefinirSenha` | 307 | `/redefinir-senha` | `/redefinir-senha/[token]` | — | link do e-mail (`/reset-password/:token` redireciona) |
 | ✅ | `Convite` | 418 | `/convite` | `/convite/[token]` | — | link do e-mail (`/invite/:token` redireciona) |
 | ⬜ | `Configurar2FA` | 266 | `/configurar-2fa` | `/configurar-2fa` | — |  |

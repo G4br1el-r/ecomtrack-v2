@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
+import { FORGOT_PASSWORD_HREF } from "@/constants/Modules/Core/Auth/auth";
 
 import { ResetPasswordForm } from ".";
 
@@ -69,6 +70,6 @@ describe("ResetPasswordForm", () => {
     await fillPasswords(STRONG_PASSWORD);
 
     expect(await screen.findByText(/já foi usado ou venceu/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Pedir novo link" })).toHaveAttribute("href", "/esqueci-senha");
+    expect(screen.getByRole("link", { name: "Pedir novo link" })).toHaveAttribute("href", FORGOT_PASSWORD_HREF);
   });
 });

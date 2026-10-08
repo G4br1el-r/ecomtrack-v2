@@ -3,11 +3,13 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import type { PagedFilters } from "@/@types/Modules/Core/Api/paged-filters";
+import { QUERY_CACHE_POLICY } from "@/constants/Modules/Core/Api/query-cache-policies";
 import { PLANS_LIST_QUERY_KEY } from "@/constants/Modules/Plataforma/Planos/plans";
 import { listPlans } from "@/services/Modules/Plataforma/Planos/list-plans";
 
 export function usePlans(filters: PagedFilters) {
   return useQuery({
+    ...QUERY_CACHE_POLICY.reference,
     queryKey: [...PLANS_LIST_QUERY_KEY, filters],
     queryFn: () => listPlans(filters),
     placeholderData: keepPreviousData,

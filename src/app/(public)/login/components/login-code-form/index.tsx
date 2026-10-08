@@ -92,24 +92,27 @@ export function LoginCodeForm({
           </FieldDescription>
           <FieldError errors={[errors.code]} className="text-center" />
         </Field>
-        <Button type="submit" className="w-full" disabled={verifying}>
-          {verifying ? <Spinner data-icon="inline-start" /> : null}
-          {verifying ? "Verificando código..." : "Verificar"}
-        </Button>
-        <div className="flex items-center justify-between gap-2">
-          <Button type="button" variant="ghost" size="sm" onClick={onBack} disabled={verifying}>
+        <div className="flex gap-3">
+          <Button type="submit" className="flex-1" disabled={verifying}>
+            {verifying ? <Spinner data-icon="inline-start" /> : null}
+            {verifying ? "Verificando código..." : "Verificar"}
+          </Button>
+          <Button type="button" variant="outline" className="flex-1" onClick={onBack} disabled={verifying}>
             <ArrowLeft data-icon="inline-start" aria-hidden="true" />
             Voltar
           </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={resendCode} disabled={resending || verifying}>
-            {resending ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <RotateCcw data-icon="inline-start" aria-hidden="true" />
-            )}
-            Reenviar código
-          </Button>
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-center"
+          onClick={resendCode}
+          disabled={resending || verifying}
+        >
+          {resending ? <Spinner data-icon="inline-start" /> : <RotateCcw data-icon="inline-start" aria-hidden="true" />}
+          Reenviar código
+        </Button>
       </FieldGroup>
     </form>
   );

@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MotionGlobalConfig } from "motion/react";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { LoginEntryStepName } from "@/@types/Modules/Core/Auth/login";
 import { HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
 import { AUTH_BFF_ROUTES } from "@/constants/Modules/Core/Auth/auth";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
@@ -19,6 +20,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
 vi.mock("sonner", () => ({ toast: { success: (...args: unknown[]) => toastSuccess(...args), error: vi.fn() } }));
 
 const REDIRECT_TO = "/tabela";
+const TYPED_EMAIL = "gabriel@ecomtrack.com.br";
 const WRONG_CODE_ERROR = { code: "AUT03", message: "Código inválido. Confira e tente de novo." };
 const RESENT_CHALLENGE = { ...LOGIN_CHALLENGE_MOCK, challengeId: "desafio-novo" };
 
@@ -35,18 +37,18 @@ function stubBff(replies: Partial<Record<keyof typeof AUTH_BFF_ROUTES, ApiReply[
   return fetchMock;
 }
 
-function renderFlow() {
+function renderFlow(initialStep?: LoginEntryStepName) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   render(
     <QueryClientProvider client={queryClient}>
-      <LoginFlow redirectTo={REDIRECT_TO} />
+      <LoginFlow redirectTo={REDIRECT_TO} initialStep={initialStep} />
     </QueryClientProvider>,
   );
   return queryClient;
 }
 
 async function submitCredentials() {
-  await userEvent.type(screen.getByLabelText("E-mail"), "gabriel@ecomtrack.com.br");
+  await userEvent.type(screen.getByLabelText("E-mail"), TYPED_EMAIL);
   await userEvent.type(screen.getByLabelText("Senha"), "senha-certa");
   await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
 }
@@ -153,6 +155,30 @@ describe("LoginFlow", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Voltar" }));
 
     expect(await screen.findByRole("heading", { name: "Entrar" })).toBeInTheDocument();
-    expect(await screen.findByLabelText("E-mail")).toBeInTheDocument();
+    expect(await screen.findByLabelText("E-mail")).toHaveValue(TYPED_EMAIL);
+  });
+
+  it("abre o esqueci a senha no mesmo lugar levando o e-mail digitado", async () => {
+    const fetchMock = stubBff({});
+    renderFlow();
+
+    await userEvent.type(screen.getByLabelText("E-mail"), TYPED_EMAIL);
+    await userEvent.click(screen.getByRole("button", { name: "Esqueci minha senha" }));
+
+    expect(await screen.findByRole("heading", { name: "Esqueci a senha" })).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toHaveValue(TYPED_EMAIL);
+
+    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+
+    expect(await screen.findByRole("heading", { name: "Entrar" })).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toHaveValue(TYPED_EMAIL);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("começa no esqueci a senha quando a etapa vem no link", () => {
+    renderFlow("forgot");
+
+    expect(screen.getByRole("heading", { name: "Esqueci a senha" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar link" })).toBeInTheDocument();
   });
 });

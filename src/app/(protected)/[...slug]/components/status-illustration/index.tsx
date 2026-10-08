@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
+import { motion, useSpring, useTransform } from "motion/react";
 
 import {
   FLOAT_DURATION_SECONDS,
@@ -10,12 +10,10 @@ import {
   TILT_FACTOR_DEGREES,
   TILT_PERSPECTIVE,
 } from "@/constants/Modules/Core/DesignSystem/motion";
-import { getPointerOffset } from "@/lib/Modules/Core/DesignSystem/get-pointer-offset";
+import { usePointerOffset } from "@/hooks/Modules/Core/DesignSystem/use-pointer-offset";
 
 export function StatusIllustration({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
-  const reduceMotion = useReducedMotion();
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
+  const { pointerX, pointerY, reduceMotion, handlePointerMove, handlePointerLeave } = usePointerOffset();
   const rotateY = useSpring(
     useTransform(pointerX, (offset) => offset * TILT_FACTOR_DEGREES),
     SPRING_NUMBER,
@@ -24,16 +22,6 @@ export function StatusIllustration({ icon, children }: { icon: React.ReactNode; 
     useTransform(pointerY, (offset) => -offset * TILT_FACTOR_DEGREES),
     SPRING_NUMBER,
   );
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (reduceMotion) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    pointerX.set(getPointerOffset(event.clientX, bounds.left, bounds.width));
-    pointerY.set(getPointerOffset(event.clientY, bounds.top, bounds.height));
-  };
-  const handlePointerLeave = () => {
-    pointerX.set(0);
-    pointerY.set(0);
-  };
   return (
     <motion.div
       aria-hidden="true"

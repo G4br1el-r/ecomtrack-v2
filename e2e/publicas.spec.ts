@@ -9,9 +9,8 @@ test.describe("telas públicas", () => {
     const page = await anonymous.newPage();
 
     await page.goto("/login");
-    await page.getByRole("link", { name: "Esqueci minha senha" }).click();
-    await page.waitForURL(/\/esqueci-senha$/);
-    await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: "Esqueci minha senha" }).click();
+    await expect(page.getByRole("heading", { name: "Esqueci a senha" })).toBeVisible();
     await page.getByLabel("E-mail").fill("ninguem@e2e.invalid");
     await page.getByRole("button", { name: "Enviar link" }).click();
 

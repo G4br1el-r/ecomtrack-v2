@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, MailCheck } from "lucide-react";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 
 import { FormErrorAlert } from "@/components/Modules/Core/DesignSystem/form-error-alert";
@@ -10,20 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { LOGIN_HREF } from "@/constants/Modules/Core/Auth/auth";
 import { useForgotPassword } from "@/hooks/Modules/Core/Auth/use-forgot-password";
 import {
   type ForgotPasswordFormValues,
   forgotPasswordSchema,
 } from "@/schemas/Modules/Core/Auth/forgot-password-schema";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ defaultEmail, onBack }: { defaultEmail: string; onBack: () => void }) {
   const { mutate: sendLink, isPending, isSuccess, error, variables } = useForgotPassword();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordFormValues>({ resolver: zodResolver(forgotPasswordSchema), defaultValues: { email: "" } });
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: defaultEmail },
+  });
 
   if (isSuccess) {
     return (
@@ -35,11 +36,9 @@ export function ForgotPasswordForm() {
           Se <strong className="font-medium">{variables?.email}</strong> estiver cadastrado, você vai receber um link
           para criar uma nova senha. Ele vale por 60 minutos.
         </p>
-        <Button asChild variant="outline" className="w-full">
-          <Link href={LOGIN_HREF}>
-            <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-            Voltar para o login
-          </Link>
+        <Button type="button" variant="outline" className="w-full" onClick={onBack}>
+          <ArrowLeft data-icon="inline-start" aria-hidden="true" />
+          Voltar para o login
         </Button>
       </div>
     );
@@ -61,16 +60,16 @@ export function ForgotPasswordForm() {
           />
           <FieldError errors={[errors.email]} />
         </Field>
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? <Spinner data-icon="inline-start" /> : null}
-          {isPending ? "Enviando..." : "Enviar link"}
-        </Button>
-        <Button asChild variant="ghost" size="sm" className="self-start">
-          <Link href={LOGIN_HREF}>
+        <div className="flex gap-3">
+          <Button type="submit" className="flex-1" disabled={isPending}>
+            {isPending ? <Spinner data-icon="inline-start" /> : null}
+            {isPending ? "Enviando..." : "Enviar link"}
+          </Button>
+          <Button type="button" variant="outline" className="flex-1" disabled={isPending} onClick={onBack}>
             <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-            Voltar para o login
-          </Link>
-        </Button>
+            Voltar
+          </Button>
+        </div>
       </FieldGroup>
     </form>
   );

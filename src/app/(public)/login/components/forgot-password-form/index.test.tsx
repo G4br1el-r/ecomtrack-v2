@@ -6,11 +6,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ForgotPasswordForm } from ".";
 
 const ACCEPTED = 202;
+const onBack = vi.fn();
 
 function renderForm() {
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>
-      <ForgotPasswordForm />
+      <ForgotPasswordForm defaultEmail="" onBack={onBack} />
     </QueryClientProvider>,
   );
 }
@@ -43,5 +44,8 @@ describe("ForgotPasswordForm", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("/api/modules/core/ecomtrack/auth/password/forgot");
     expect(init?.body).toBe(JSON.stringify({ email: "ana@empresa.com" }));
+
+    await userEvent.click(screen.getByRole("button", { name: "Voltar para o login" }));
+    expect(onBack).toHaveBeenCalled();
   });
 });

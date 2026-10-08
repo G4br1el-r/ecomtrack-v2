@@ -348,6 +348,12 @@ Toda ação relevante do usuário termina com um toast do Sonner (o `<Toaster />
 - Toda página que usa endpoints declara as chaves em `PAGE_ENDPOINT_KEYS` (`constants/Modules/Core/Shell/page-endpoints.ts`); é o que o botão `</>` do Owner mostra. Um teste garante que os 83 endpoints estão mapeados.
 - Permissões: `useCan()` → `can(API_ENDPOINTS.x.y.component)` lê `GET /permissions/me` (Owner sempre pode). Sem permissão, `ActionLockTooltip` no botão e `ActionLockedTag` no item de menu; na dúvida (carregando), bloqueia. A API valida de novo (403).
 - Mutação que mexe em lista paginada usa `useOptimisticListMutation` (`hooks/Modules/Core/Api/`).
+- Cache: toda `useQuery` escolhe uma política de `QUERY_CACHE_POLICY` (`constants/Modules/Core/Api/query-cache-policies.ts`) com `...QUERY_CACHE_POLICY.<política>` no começo das opções (um teste falha se faltar). Para escolher, nesta ordem:
+  1. O dado nunca muda depois de criado (ex.: registro de auditoria) → `immutable`.
+  2. A tela abre o dado para editar (painel de edição, formulário) → `edit`: busca sempre o atual ao abrir, descarta o cache ao fechar e não recarrega no foco, para não apagar o que está sendo digitado.
+  3. Senão, por quem muda e com que frequência: só a plataforma, quase nunca (provedores, catálogo de permissões) → `static` (30 min); um administrador, de vez em quando (planos, perfis, empresas, permissões) → `reference` (5 min + foco); várias pessoas ou o sistema, o dia todo (usuários, convites, conexões, esteira) → `operational` (30 s + foco); métricas que mudam o tempo todo (dashboard, câmbio) → `panel` (1 min + atualiza a cada 5 min com a aba aberta).
+  - Quanto pior for mostrar dado velho, menor o tempo. Regra própria só com motivo explícito (hoje: sessão, link de convite e prévia de e-mail).
+  - Nova tentativa automática só em falha de rede ou 5xx (`shouldRetryQuery`); 4xx aparece na hora.
 - Owner escolhe a empresa no seletor do header (`company-context-store`); "visualizar como" usa o `view-as-store` (token só de leitura + faixa no topo).
 - E2E (Playwright, pasta `e2e/`): `pnpm e2e:login` pede o código; `E2E_LOGIN_CODE=xxxxxx pnpm e2e:login` grava a sessão; `pnpm e2e` roda tudo numa sessão única, dentro da empresa "E2E Testes Automatizados". Credenciais em `.env.e2e.local` (fora do git).
   - Cobertura: toda chamada ao BFF durante o E2E é registrada; no fim, `e2e/.coverage/relatorio.md` lista os 83 endpoints com os status recebidos e a execução falha se algum ficou sem resposta válida (sem 5xx nem 429). Endpoint novo precisa de teste E2E.

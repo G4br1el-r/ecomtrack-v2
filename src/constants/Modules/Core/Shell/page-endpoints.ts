@@ -11,8 +11,7 @@ export const SHELL_ENDPOINT_KEYS: readonly ApiEndpointKey[] = [
 ];
 
 export const PAGE_ENDPOINT_KEYS: Readonly<Record<string, readonly ApiEndpointKey[]>> = {
-  "/login": ["auth.login", "auth.verify", "auth.resend"],
-  "/esqueci-senha": ["auth.forgotPassword"],
+  "/login": ["auth.login", "auth.verify", "auth.resend", "auth.forgotPassword"],
   "/redefinir-senha": ["auth.resetPassword"],
   "/convite": ["auth.getInvite", "auth.acceptInvite"],
   "/minha-conta": ["account.get", "account.update", "account.changePassword", "account.setPin"],
