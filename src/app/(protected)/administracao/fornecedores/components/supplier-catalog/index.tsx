@@ -6,6 +6,7 @@ import { Combobox } from "@/components/Modules/Core/DesignSystem/combobox";
 import { DataTable } from "@/components/Modules/Core/DesignSystem/data-table";
 import { EmptyState } from "@/components/Modules/Core/DesignSystem/empty-state";
 import { ErrorState } from "@/components/Modules/Core/DesignSystem/error-state";
+import { SearchField } from "@/components/Modules/Core/DesignSystem/search-field";
 import { SegmentedFilter } from "@/components/Modules/Core/DesignSystem/segmented-filter";
 import {
   CATALOG_SCOPE,
@@ -25,10 +26,13 @@ export function SupplierCatalog() {
   const table = useDataTableServerState(SUPPLIER_PRODUCTS_TABLE_SETTINGS);
   const [scope, setScope] = useState<CatalogScope>(CATALOG_SCOPE.available);
   const [integrationId, setIntegrationId] = useState("");
+  const [platformDraft, setPlatformDraft] = useState("");
+  const [platform, setPlatform] = useState("");
   const { data: connections } = useIntegrations("supplier", ALL_ITEMS_FILTERS);
   const { data, isPending, isError, refetch } = useSupplierProducts({
     ...table.query,
     IntegrationId: integrationId || undefined,
+    Platform: platform || undefined,
     IncludeIntegrated: scope === CATALOG_SCOPE.all,
   });
 
@@ -79,6 +83,27 @@ export function SupplierCatalog() {
               }}
               className="h-9 w-56"
             />
+            <form
+              aria-label="Filtrar por plataforma"
+              onSubmit={(event) => {
+                event.preventDefault();
+                setPlatform(platformDraft.trim());
+                table.resetPage();
+              }}
+            >
+              <SearchField
+                aria-label="Plataforma"
+                placeholder="Plataforma (Enter)"
+                value={platformDraft}
+                onChange={(event) => setPlatformDraft(event.target.value)}
+                onClear={() => {
+                  setPlatformDraft("");
+                  setPlatform("");
+                  table.resetPage();
+                }}
+                className="h-9 w-48"
+              />
+            </form>
           </>
         ),
       }}

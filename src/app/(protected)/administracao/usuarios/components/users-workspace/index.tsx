@@ -22,7 +22,7 @@ import { UsersPanels } from "../users-panels";
 import { UsersTable } from "../users-table";
 
 export function UsersWorkspace() {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.invites.create.page);
   const open = useUsersPanelStore((state) => state.open);
   const canInvite = can(API_ENDPOINTS.invites.create.component);
   const canSeeInvites = can(API_ENDPOINTS.invites.list.component);

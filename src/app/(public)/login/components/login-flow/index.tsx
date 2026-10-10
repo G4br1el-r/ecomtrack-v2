@@ -14,6 +14,7 @@ import { DURATION_BASE, EASE_OUT, SLIDE_OFFSET_Y, SPRING_SOFT } from "@/constant
 import { ForgotPasswordForm } from "../forgot-password-form";
 import { LoginCodeForm } from "../login-code-form";
 import { LoginCredentialsForm } from "../login-credentials-form";
+import { LoginDrawnIcon } from "../login-drawn-icon";
 
 export function LoginFlow({
   redirectTo,
@@ -29,7 +30,7 @@ export function LoginFlow({
 
   return (
     <motion.div
-      className="w-full max-w-sm lg:transform-none! lg:opacity-100! [&_[data-slot=button]]:rounded-full"
+      className="w-full max-w-sm"
       initial={{ opacity: 0, y: LOGIN_FORM_REVEAL_OFFSET }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ...SPRING_SOFT, delay: LOGIN_FORM_REVEAL_DELAY_SECONDS }}
@@ -42,9 +43,14 @@ export function LoginFlow({
           exit={{ opacity: 0, y: -SLIDE_OFFSET_Y }}
           transition={{ duration: DURATION_BASE, ease: EASE_OUT }}
         >
-          <header className="mb-8 space-y-1.5 text-center">
-            <h1 className="font-semibold text-2xl tracking-tight">{copy.title}</h1>
-            <p className="text-pretty text-muted-foreground text-sm">{copy.description}</p>
+          <header className="mb-6 space-y-4 lg:mb-8 lg:space-y-5">
+            <span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
+              <LoginDrawnIcon name={step.name} />
+            </span>
+            <div className="space-y-1.5">
+              <h1 className="font-semibold text-2xl tracking-tight">{copy.title}</h1>
+              <p className="text-pretty text-muted-foreground text-sm">{copy.description}</p>
+            </div>
           </header>
           {step.name === "credentials" ? (
             <LoginCredentialsForm

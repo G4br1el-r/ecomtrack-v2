@@ -31,6 +31,7 @@ import {
   DATA_TABLE_UTILITY_COLUMN_IDS,
 } from "@/constants/Modules/Core/DesignSystem/data-table";
 import { useDataTablePreferences } from "@/hooks/Modules/Core/DesignSystem/use-data-table-preferences";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { buildDataTableColumns } from "@/lib/Modules/Core/DesignSystem/build-data-table-columns";
 import { resetDataTableFeature } from "@/lib/Modules/Core/DesignSystem/reset-data-table-feature";
 import { resolvePageSize } from "@/lib/Modules/Core/DesignSystem/resolve-page-size";
@@ -38,6 +39,8 @@ import { cn } from "@/lib/utils";
 import { useDensityStore } from "@/store/Modules/Core/DesignSystem/density-store";
 
 import { DataTableBodyRow } from "../data-table-body-row";
+import { DataTableCardList } from "../data-table-card-list";
+import { DataTableCardSkeleton } from "../data-table-card-skeleton";
 import { DataTableHeaderCell } from "../data-table-header-cell";
 import { DataTableRowDetail } from "../data-table-row-detail";
 import { DataTableToolbar } from "../data-table-toolbar";
@@ -75,6 +78,7 @@ export function DataTable<TData extends RowData>({
   server?: DataTableServer;
 }) {
   const density = useDensityStore((state) => state.density);
+  const isMobile = useIsMobile();
   const { features, preferences, patch, setFeature, resetFeatures } = useDataTablePreferences(settings);
   const advanced = settings !== undefined;
   const selectable = onRowSelectionChange !== undefined;
@@ -181,9 +185,19 @@ export function DataTable<TData extends RowData>({
         />
       ) : null}
       {paginationBar}
-      {loading ? (
-        <TableSkeleton rows={DATA_TABLE_SKELETON_ROWS} columns={columns.length} />
-      ) : (
+      {loading && isMobile ? <DataTableCardSkeleton cards={DATA_TABLE_SKELETON_ROWS} /> : null}
+      {loading && !isMobile ? <TableSkeleton rows={DATA_TABLE_SKELETON_ROWS} columns={columns.length} /> : null}
+      {!loading && isMobile ? (
+        <DataTableCardList
+          table={table}
+          rows={[...topRows, ...rows]}
+          pinnedRowsKey={pinnedRowsKey}
+          density={density}
+          renderDetail={canExpandDetail ? renderDetail : undefined}
+          empty={empty}
+        />
+      ) : null}
+      {!loading && !isMobile ? (
         <div
           data-density={density}
           data-resizing={table.store.state.columnResizing.isResizingColumn ? true : undefined}
@@ -219,7 +233,7 @@ export function DataTable<TData extends RowData>({
           </Table>
           {rows.length === 0 && topRows.length === 0 ? <div>{empty}</div> : null}
         </div>
-      )}
+      ) : null}
       {paginationBar}
     </div>
   );

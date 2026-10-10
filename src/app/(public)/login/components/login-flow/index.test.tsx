@@ -91,7 +91,7 @@ describe("LoginFlow", () => {
     await submitCredentials();
 
     expect(await screen.findByText("E-mail ou senha inválidos.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Entrar" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bem-vindo de volta" })).toBeInTheDocument();
   });
 
   it("entra com o código certo, guarda a sessão e volta para a rota pedida", async () => {
@@ -118,8 +118,9 @@ describe("LoginFlow", () => {
     expect(await screen.findByText(WRONG_CODE_ERROR.message)).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
 
-    await userEvent.clear(screen.getByLabelText("Código de verificação"));
-    await userEvent.type(screen.getByLabelText("Código de verificação"), "654321");
+    const retryInput = await screen.findByLabelText("Código de verificação");
+    expect(retryInput).toHaveValue("");
+    await userEvent.type(retryInput, "654321");
 
     expect(await screen.findByRole("status", { name: "Código confirmado. Entrando..." })).toBeInTheDocument();
     await vi.waitFor(() => expect(replace).toHaveBeenCalledWith(REDIRECT_TO));
@@ -154,7 +155,7 @@ describe("LoginFlow", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: "Voltar" }));
 
-    expect(await screen.findByRole("heading", { name: "Entrar" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Bem-vindo de volta" })).toBeInTheDocument();
     expect(await screen.findByLabelText("E-mail")).toHaveValue(TYPED_EMAIL);
   });
 
@@ -170,7 +171,7 @@ describe("LoginFlow", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
 
-    expect(await screen.findByRole("heading", { name: "Entrar" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Bem-vindo de volta" })).toBeInTheDocument();
     expect(screen.getByLabelText("E-mail")).toHaveValue(TYPED_EMAIL);
     expect(fetchMock).not.toHaveBeenCalled();
   });

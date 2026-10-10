@@ -1,12 +1,9 @@
 import { create } from "zustand";
 
-import type { ProfilePermissions } from "@/schemas/Modules/Core/Access/profile-permissions-schema";
-
 type ViewAsSession = {
   token: string;
   expiresAt: string;
   label: string;
-  permissions: ProfilePermissions;
 };
 
 type ViewAsState = {

@@ -16,7 +16,7 @@ import { useUsersPanelStore } from "@/store/Modules/Administracao/Usuarios/users
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 
 export function UserRowActions({ user }: { user: User }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.users.update.page);
   const open = useUsersPanelStore((state) => state.open);
   const currentUserId = useSessionStore((state) => state.user?.id);
   const { enter } = useViewAs();

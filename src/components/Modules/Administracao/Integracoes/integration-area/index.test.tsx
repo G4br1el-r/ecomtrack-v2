@@ -5,12 +5,12 @@ import { MotionGlobalConfig } from "motion/react";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
+import { ownerPagePermissionsMock } from "@/mocks/Modules/Core/Access/owner-page-permissions";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
 import { useIntegrationPanelStore } from "@/store/Modules/Administracao/Integracoes/integration-panel-store";
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 import { useDataTablePreferencesStore } from "@/store/Modules/Core/DesignSystem/data-table-preferences-store";
 import { useCompanyContextStore } from "@/store/Modules/Core/Shell/company-context-store";
-
 import { IntegrationArea } from ".";
 
 const toastSuccess = vi.fn();
@@ -52,13 +52,10 @@ function stubApi(providers: unknown[] = [PROVIDER]) {
     "fetch",
     vi.fn((input: string, init?: RequestInit) => {
       const path = new URL(input, "http://localhost").pathname.replace("/api/modules/core/ecomtrack", "");
+      const permissionsMatch = path.match(/^\/permissions\/([^/]+)\/components$/);
+      if (permissionsMatch) return Promise.resolve(Response.json(ownerPagePermissionsMock(permissionsMatch[1])));
       const method = init?.method ?? "GET";
       calls.push({ method, path, body: init?.body ? JSON.parse(String(init.body)) : null });
-      if (path === "/permissions/me") {
-        return Promise.resolve(
-          Response.json({ profileId: "o", profileName: "Owner", version: 1, kind: "Owner", pages: [], components: [] }),
-        );
-      }
       if (path === "/integrations/ecommerce/providers") return Promise.resolve(Response.json(providers));
       if (path === "/integrations/ecommerce/int-1" && method === "GET") {
         return Promise.resolve(Response.json({ ...CONNECTION, name: "Loja atualizada" }));

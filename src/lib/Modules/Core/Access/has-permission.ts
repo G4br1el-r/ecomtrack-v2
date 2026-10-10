@@ -1,7 +1,7 @@
-import type { ProfilePermissions } from "@/schemas/Modules/Core/Access/profile-permissions-schema";
+import type { PagePermissionComponents } from "@/schemas/Modules/Core/Access/page-permission-components-schema";
 
-export function hasPermission(permissions: ProfilePermissions | undefined, code: string): boolean {
-  if (!permissions) return false;
-  if (permissions.kind === "Owner") return true;
-  return permissions.components.includes(code) || permissions.pages.some((page) => page.code === code);
+export function hasPermission(permissions: PagePermissionComponents | undefined, componentCode?: string): boolean {
+  if (!permissions?.pageEnabled) return false;
+  if (!componentCode) return true;
+  return permissions.components.some((component) => component.code === componentCode && component.enabled);
 }

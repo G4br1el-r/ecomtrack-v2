@@ -7,7 +7,10 @@ import { DataTableSortHeader } from "@/components/Modules/Core/DesignSystem/data
 import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-cell";
 import { Badge } from "@/components/ui/badge";
 import { USER_COLUMN_SIZE, USER_STATUS_BADGE } from "@/constants/Modules/Administracao/Usuarios/users";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import type { User } from "@/schemas/Modules/Administracao/Usuarios/user-schema";
 
 const columnHelper = createColumnHelper<DataTableFeatures, User>();
@@ -35,7 +38,7 @@ export function createUserColumns(): DataTableColumn<User>[] {
     }),
     columnHelper.accessor("status", {
       size: USER_COLUMN_SIZE.status,
-      meta: { label: "Situação" },
+      meta: { label: "Situação", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => {
         const status = USER_STATUS_BADGE[getValue()];
@@ -56,7 +59,7 @@ export function createUserColumns(): DataTableColumn<User>[] {
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: USER_COLUMN_SIZE.actions,
       minSize: USER_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

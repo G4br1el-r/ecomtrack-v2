@@ -24,14 +24,14 @@ export function IntegrationRowActions({
   area: IntegrationArea;
   integration: CompanyIntegration;
 }) {
-  const { can } = useCan();
+  const { can } = useCan(INTEGRATION_AREA_ENDPOINTS[area].update.page);
   const open = useIntegrationPanelStore((state) => state.open);
   const { data: providers } = useIntegrationProviders(area);
   const [confirming, setConfirming] = useState(false);
   const provider = providers?.find((candidate) => candidate.id === integration.providerId);
   const endpoints = INTEGRATION_AREA_ENDPOINTS[area];
-  const canEdit = can(endpoints.update.component ?? "");
-  const canRemove = can(endpoints.remove.component ?? "");
+  const canEdit = can(endpoints.update.component);
+  const canRemove = can(endpoints.remove.component);
   const label = `${integration.providerName} · ${integration.name}`;
   const { mutate: save } = useSaveIntegration(area, {
     onSuccess: (saved) =>

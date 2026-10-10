@@ -14,10 +14,13 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { HOME_HREF } from "@/constants/Modules/Core/Shell/navigation";
+import { usePermissionMenu } from "@/hooks/Modules/Core/Access/use-permission-menu";
 import { getBreadcrumbs } from "@/lib/Modules/Core/Shell/get-breadcrumbs";
 
 export function TopbarBreadcrumbs() {
-  const crumbs = getBreadcrumbs(usePathname());
+  const pathname = usePathname();
+  const { data: menu } = usePermissionMenu();
+  const crumbs = getBreadcrumbs(menu, pathname);
   return (
     <Breadcrumb>
       <BreadcrumbList>

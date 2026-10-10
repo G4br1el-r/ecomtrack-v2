@@ -6,7 +6,10 @@ import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-c
 import { NumberCell } from "@/components/Modules/Core/DesignSystem/number-cell";
 import { CompanyRowActions } from "@/components/Modules/Plataforma/Empresas/company-row-actions";
 import { Badge } from "@/components/ui/badge";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import { EMPTY_VALUE } from "@/constants/Modules/Core/DesignSystem/number-format";
 import { COMPANY_COLUMN_SIZE, COMPANY_STATUS_BADGE } from "@/constants/Modules/Plataforma/Empresas/companies";
 import { formatDocument } from "@/lib/Modules/Plataforma/Empresas/format-document";
@@ -46,7 +49,7 @@ export function createCompanyColumns(): DataTableColumn<Company>[] {
     }),
     columnHelper.accessor("status", {
       size: COMPANY_COLUMN_SIZE.status,
-      meta: { label: "Situação" },
+      meta: { label: "Situação", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => {
         const status = COMPANY_STATUS_BADGE[getValue()];
@@ -61,7 +64,7 @@ export function createCompanyColumns(): DataTableColumn<Company>[] {
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: COMPANY_COLUMN_SIZE.actions,
       minSize: COMPANY_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

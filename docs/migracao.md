@@ -122,11 +122,12 @@ Telas que não existem no Lovable e nasceram dos endpoints da `ecomtrack.api`. O
 | ✅ | Usuários (usuários, convites, perfis) | `/administracao/usuarios` | `users*`, `users/invites*`, `profiles*` |
 | ✅ | Comunicação (e-mails + conta de envio) | `/administracao/comunicacao` | `communication*`, `integrations/email*` |
 | ✅ | E-commerce | `/administracao/ecommerce` | `integrations/ecommerce*` |
-| ✅ | Agentes IA | `/administracao/agentes-ia` | `integrations/ai*` |
+| ✅ | Agentes IA (conexões + tarefas) | `/administracao/agentes-ia` | `integrations/ai*`, `ai/tasks*`, `auth/me/preferences/ai.task.*` |
 | ✅ | Fornecedores (conexões + catálogo) | `/administracao/fornecedores` | `integrations/suppliers*`, `suppliers/products` |
 | ✅ | Auditoria | `/administracao/auditoria` | `audit-logs*` |
 | ✅ | Empresas (só Owner) | `/plataforma/empresas` | `companies*` |
 | ✅ | Planos (só Owner) | `/plataforma/planos` | `plans*` |
+| ✅ | Casca do app (menu, permissões, preferências, tempo real) | todas | `permissions/menu`, `permissions/{code}/components`, `auth/me/preferences*`, hub `/hubs/permissions` |
 
 ## Sistema de rotas
 

@@ -52,7 +52,7 @@ export function createSupplierProductColumns(): DataTableColumn<SupplierProduct>
     columnHelper.accessor((product) => product.price ?? product.minPrice, {
       id: "price",
       size: SUPPLIER_PRODUCT_COLUMN_SIZE.price,
-      meta: { label: "Preço do contrato" },
+      meta: { label: "Preço do contrato", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ row }) => (
         <div className="flex flex-col items-end font-mono text-sm tabular-nums">
@@ -67,7 +67,7 @@ export function createSupplierProductColumns(): DataTableColumn<SupplierProduct>
     }),
     columnHelper.accessor("quantity", {
       size: SUPPLIER_PRODUCT_COLUMN_SIZE.stock,
-      meta: { label: "Estoque" },
+      meta: { label: "Estoque", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ row }) =>
         row.original.isOnDemand ? (
@@ -84,7 +84,7 @@ export function createSupplierProductColumns(): DataTableColumn<SupplierProduct>
     }),
     columnHelper.accessor("isIntegrated", {
       size: SUPPLIER_PRODUCT_COLUMN_SIZE.integrated,
-      meta: { label: "Na loja" },
+      meta: { label: "Na loja", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => (getValue() ? <Badge variant="success">Já é produto</Badge> : null),
     }),

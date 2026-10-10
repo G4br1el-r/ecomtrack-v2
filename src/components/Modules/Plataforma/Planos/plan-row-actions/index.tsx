@@ -14,7 +14,7 @@ import type { Plan } from "@/schemas/Modules/Plataforma/Planos/plan-schema";
 import { usePlanPanelStore } from "@/store/Modules/Plataforma/Planos/plan-panel-store";
 
 export function PlanRowActions({ plan }: { plan: Plan }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.plans.update.page);
   const open = usePlanPanelStore((state) => state.open);
   const [confirming, setConfirming] = useState(false);
   const canEdit = can(API_ENDPOINTS.plans.update.component);

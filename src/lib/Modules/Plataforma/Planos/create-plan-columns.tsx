@@ -4,7 +4,10 @@ import type { DataTableColumn, DataTableFeatures } from "@/@types/Modules/Core/D
 import { DataTableSortHeader } from "@/components/Modules/Core/DesignSystem/data-table-sort-header";
 import { NumberCell } from "@/components/Modules/Core/DesignSystem/number-cell";
 import { PlanRowActions } from "@/components/Modules/Plataforma/Planos/plan-row-actions";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import { PLAN_COLUMN_SIZE } from "@/constants/Modules/Plataforma/Planos/plans";
 import type { Plan } from "@/schemas/Modules/Plataforma/Planos/plan-schema";
 
@@ -27,25 +30,25 @@ export function createPlanColumns(): DataTableColumn<Plan>[] {
     }),
     columnHelper.accessor("pageCount", {
       size: PLAN_COLUMN_SIZE.pages,
-      meta: { label: "Páginas" },
+      meta: { label: "Páginas", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="integer" />,
     }),
     columnHelper.accessor("componentCount", {
       size: PLAN_COLUMN_SIZE.components,
-      meta: { label: "Ações" },
+      meta: { label: "Ações", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="integer" />,
     }),
     columnHelper.accessor("companyCount", {
       size: PLAN_COLUMN_SIZE.companies,
-      meta: { label: "Empresas" },
+      meta: { label: "Empresas", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="integer" />,
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: PLAN_COLUMN_SIZE.actions,
       minSize: PLAN_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

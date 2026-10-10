@@ -2,9 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { API_ENDPOINTS } from "@/constants/Modules/Core/Api/api-endpoints";
-import { COMPANY_HEADER, HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
+import { COMPANY_HEADER, HTTP_STATUS, SECURITY_PIN_HEADER } from "@/constants/Modules/Core/Api/http";
 import { SESSION_EXPIRED_ERROR } from "@/constants/Modules/Core/Auth/auth";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
+import { useSecurityPinStore } from "@/store/Modules/Core/Access/security-pin-store";
 import { useViewAsStore } from "@/store/Modules/Core/Access/view-as-store";
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 import { useCompanyContextStore } from "@/store/Modules/Core/Shell/company-context-store";
@@ -42,7 +43,6 @@ describe("requestApi", () => {
       token: "token-visualizacao",
       expiresAt: "2026-10-07T12:30:00Z",
       label: "Vendas",
-      permissions: { profileId: "p1", profileName: "Vendas", version: 1, kind: "Company", pages: [], components: [] },
     });
     const fetchMock = stubFetch(
       Response.json({ ok: true }),
@@ -143,5 +143,17 @@ describe("requestApi", () => {
       "Link inválido.",
     );
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("manda o PIN guardado em memória só para rota protegida por PIN", async () => {
+    useSecurityPinStore.setState({ pins: { Six: "135790" } });
+    const fetchMock = stubFetch(Response.json({ ok: true }), Response.json({ ok: true }));
+
+    await requestApi({ ...API_ENDPOINTS.users.list, securityPin: "Six" }, SCHEMA);
+    await requestApi(API_ENDPOINTS.users.list, SCHEMA);
+
+    expect(headersOf(fetchMock, 0).get(SECURITY_PIN_HEADER)).toBe("135790");
+    expect(headersOf(fetchMock, 1).has(SECURITY_PIN_HEADER)).toBe(false);
+    useSecurityPinStore.setState({ pins: {} });
   });
 });

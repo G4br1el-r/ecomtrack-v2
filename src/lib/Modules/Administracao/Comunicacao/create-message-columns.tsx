@@ -6,6 +6,7 @@ import { NotificationStatusSwitch } from "@/components/Modules/Administracao/Com
 import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-cell";
 import { Badge } from "@/components/ui/badge";
 import { MESSAGE_COLUMN_SIZE } from "@/constants/Modules/Administracao/Comunicacao/communication";
+import { DATA_TABLE_ACTIONS_COLUMN_ID } from "@/constants/Modules/Core/DesignSystem/data-table";
 import type { NotificationSummary } from "@/schemas/Modules/Administracao/Comunicacao/notification-summary-schema";
 
 const columnHelper = createColumnHelper<DataTableFeatures, NotificationSummary>();
@@ -31,7 +32,7 @@ export function createMessageColumns(): DataTableColumn<NotificationSummary>[] {
     }),
     columnHelper.accessor("isCustom", {
       size: MESSAGE_COLUMN_SIZE.text,
-      meta: { label: "Texto" },
+      meta: { label: "Texto", card: "badge" },
       header: "Texto",
       cell: ({ row }) =>
         row.original.isCustom ? (
@@ -49,7 +50,7 @@ export function createMessageColumns(): DataTableColumn<NotificationSummary>[] {
       cell: ({ getValue }) => <DateTimeCell value={getValue()} />,
     }),
     columnHelper.display({
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: MESSAGE_COLUMN_SIZE.actions,
       meta: { label: "Ações" },
       header: () => <span className="block text-right">Ações</span>,

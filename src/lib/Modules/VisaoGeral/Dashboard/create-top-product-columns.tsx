@@ -10,6 +10,7 @@ export function createTopProductColumns(maxRevenueShare: number): DataTableColum
   return [
     {
       accessorKey: "rank",
+      meta: { label: "Posição", card: "hidden" },
       header: ({ column }) => <DataTableSortHeader column={column} title="#" />,
       cell: ({ row }) => (
         <span className="grid size-6 place-items-center rounded-md bg-muted font-mono text-xs text-muted-foreground tabular-nums">
@@ -19,6 +20,7 @@ export function createTopProductColumns(maxRevenueShare: number): DataTableColum
     },
     {
       accessorKey: "name",
+      meta: { label: "Produto", card: "title" },
       header: ({ column }) => <DataTableSortHeader column={column} title="Produto" />,
       cell: ({ row }) => (
         <div className="max-w-72" title={row.original.name}>
@@ -28,21 +30,25 @@ export function createTopProductColumns(maxRevenueShare: number): DataTableColum
     },
     {
       accessorKey: "unitsSold",
+      meta: { label: "Qtd. vendida" },
       header: ({ column }) => <DataTableSortHeader column={column} title="Qtd. vendida" align="right" />,
       cell: ({ row }) => <NumberCell value={row.original.unitsSold} kind="integer" />,
     },
     {
       accessorKey: "revenue",
+      meta: { label: "Faturamento", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} title="Faturamento" align="right" />,
       cell: ({ row }) => <NumberCell value={row.original.revenue} kind="currency" />,
     },
     {
       accessorKey: "profit",
+      meta: { label: "Lucro", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} title="Lucro" align="right" />,
       cell: ({ row }) => <NumberCell value={row.original.profit} kind="currency" />,
     },
     {
       accessorKey: "revenueShare",
+      meta: { label: "% do faturamento" },
       header: ({ column }) => <DataTableSortHeader column={column} title="% Fat." align="right" />,
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-2.5">
@@ -55,11 +61,13 @@ export function createTopProductColumns(maxRevenueShare: number): DataTableColum
     },
     {
       accessorKey: "profitShare",
+      meta: { label: "% do lucro" },
       header: ({ column }) => <DataTableSortHeader column={column} title="% Lucro" align="right" />,
       cell: ({ row }) => <NumberCell value={row.original.profitShare} kind="percent" muted />,
     },
     {
       accessorKey: "ordersShare",
+      meta: { label: "% dos pedidos" },
       header: ({ column }) => <DataTableSortHeader column={column} title="% Pedidos" align="right" />,
       cell: ({ row }) => <NumberCell value={row.original.ordersShare} kind="percent" muted />,
     },

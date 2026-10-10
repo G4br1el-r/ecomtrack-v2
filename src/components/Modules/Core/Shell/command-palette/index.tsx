@@ -1,10 +1,11 @@
 "use client";
 
-import { FileText, Moon, PanelLeft, Plus, Sun } from "lucide-react";
+import { Moon, PanelLeft, Plus, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
+import { LucideIcon } from "@/components/Modules/Core/DesignSystem/lucide-icon";
 import {
   Command,
   CommandDialog,
@@ -13,16 +14,16 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
 import { useSidebar } from "@/components/ui/sidebar";
+import { NO_SECTION_LABEL } from "@/constants/Modules/Core/Access/access";
 import { COMMAND_PALETTE_HOTKEY, SIDEBAR_TOGGLE_HOTKEY } from "@/constants/Modules/Core/Shell/hotkeys";
-import { NAV_GROUPS, REPORT_LINKS } from "@/constants/Modules/Core/Shell/navigation";
+import { usePermissionMenu } from "@/hooks/Modules/Core/Access/use-permission-menu";
 import { useHotkey } from "@/hooks/Modules/Core/Shell/use-hotkey";
 import { useModKeyLabel } from "@/hooks/Modules/Core/Shell/use-mod-key-label";
 import { formatHotkey } from "@/lib/Modules/Core/Shell/format-hotkey";
-import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
+import { getVisibleMenuSections } from "@/lib/Modules/Core/Shell/get-visible-menu-sections";
 import { useCommandPaletteStore } from "@/store/Modules/Core/Shell/command-palette-store";
 
 export function CommandPalette() {
@@ -33,7 +34,7 @@ export function CommandPalette() {
   const open = useCommandPaletteStore((state) => state.open);
   const setOpen = useCommandPaletteStore((state) => state.setOpen);
   const toggle = useCommandPaletteStore((state) => state.toggle);
-  const isOwner = useSessionStore((state) => state.user?.isPlatformOwner ?? false);
+  const { data: menu } = usePermissionMenu();
   useHotkey(COMMAND_PALETTE_HOTKEY, toggle);
 
   const run = (action: () => void) => {
@@ -44,7 +45,7 @@ export function CommandPalette() {
   return (
     <CommandDialog open={open} onOpenChange={setOpen} title="Buscar" description="Navegue e execute ações">
       <Command>
-        <CommandInput placeholder="Buscar páginas, relatórios e ações..." />
+        <CommandInput placeholder="Buscar páginas e ações..." />
         <CommandList>
           <CommandEmpty>Nada encontrado.</CommandEmpty>
           <CommandGroup heading="Ações">
@@ -64,33 +65,25 @@ export function CommandPalette() {
               <CommandShortcut>{formatHotkey(SIDEBAR_TOGGLE_HOTKEY, modKey)}</CommandShortcut>
             </CommandItem>
           </CommandGroup>
-          {NAV_GROUPS.filter((group) => isOwner || !group.ownerOnly).map((group) => (
-            <CommandGroup key={group.label} heading={group.label}>
-              {group.items.map((item) => (
-                <CommandItem
-                  key={item.href}
-                  value={`${group.label} ${item.title}`}
-                  onSelect={() => run(() => router.push(item.href))}
-                >
-                  <item.icon aria-hidden="true" />
-                  {item.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ))}
-          <CommandSeparator />
-          <CommandGroup heading="Relatórios">
-            {REPORT_LINKS.map((report) => (
-              <CommandItem
-                key={report.href}
-                value={`Relatório ${report.title}`}
-                onSelect={() => run(() => router.push(report.href))}
-              >
-                <FileText aria-hidden="true" />
-                {report.title}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {getVisibleMenuSections(menu).map((section) => {
+            const label = section.name || NO_SECTION_LABEL;
+            const pages = section.pages.filter((page) => page.enabled);
+            if (pages.length === 0) return null;
+            return (
+              <CommandGroup key={section.sectionId ?? label} heading={label}>
+                {pages.map((page) => (
+                  <CommandItem
+                    key={page.id}
+                    value={`${label} ${page.name}`}
+                    onSelect={() => run(() => router.push(page.route ?? ""))}
+                  >
+                    <LucideIcon name={page.icon} aria-hidden="true" />
+                    {page.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            );
+          })}
         </CommandList>
       </Command>
     </CommandDialog>

@@ -1,12 +1,12 @@
 import type { Breadcrumb } from "@/@types/Modules/Core/Shell/navigation";
+import type { PermissionMenuSection } from "@/schemas/Modules/Core/Access/permission-menu-section-schema";
 
-import { findNavEntry } from "./find-nav-entry";
+import { findMenuEntry } from "./find-menu-entry";
 
-export function getBreadcrumbs(pathname: string): Breadcrumb[] {
-  const entry = findNavEntry(pathname);
+export function getBreadcrumbs(menu: PermissionMenuSection[] | undefined, pathname: string): Breadcrumb[] {
+  const entry = findMenuEntry(menu, pathname);
   if (!entry) return [{ label: "Página não encontrada" }];
-  const group: Breadcrumb = entry.groupHref
-    ? { label: entry.groupLabel, href: entry.groupHref }
-    : { label: entry.groupLabel };
-  return [group, { label: entry.title }];
+  return entry.section.name
+    ? [{ label: entry.section.name }, { label: entry.page.name }]
+    : [{ label: entry.page.name }];
 }

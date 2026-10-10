@@ -9,7 +9,7 @@ import { useCan } from "@/hooks/Modules/Core/Access/use-can";
 import type { NotificationSummary } from "@/schemas/Modules/Administracao/Comunicacao/notification-summary-schema";
 
 export function NotificationStatusSwitch({ notification }: { notification: NotificationSummary }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.communication.setStatus.page);
   const { mutate: setStatus } = useSetNotificationStatus({
     onSuccess: ({ key, isEnabled }) =>
       toast.success(isEnabled ? "E-mail ligado" : "E-mail desligado", {

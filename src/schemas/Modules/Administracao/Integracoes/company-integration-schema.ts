@@ -11,7 +11,7 @@ export const companyIntegrationSchema = z.object({
   name: z.string(),
   isActive: z.boolean(),
   isPlatform: z.boolean(),
-  values: z.record(z.string(), z.string()),
+  values: z.record(z.string(), z.string().nullable()),
   updatedAt: z.string().nullable(),
 });
 

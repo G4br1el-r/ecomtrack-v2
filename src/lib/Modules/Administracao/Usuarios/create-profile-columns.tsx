@@ -7,7 +7,10 @@ import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-c
 import { NumberCell } from "@/components/Modules/Core/DesignSystem/number-cell";
 import { Badge } from "@/components/ui/badge";
 import { PROFILE_COLUMN_SIZE } from "@/constants/Modules/Administracao/Usuarios/users";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import type { Profile } from "@/schemas/Modules/Administracao/Usuarios/profile-schema";
 
 const columnHelper = createColumnHelper<DataTableFeatures, Profile>();
@@ -35,7 +38,7 @@ export function createProfileColumns(): DataTableColumn<Profile>[] {
     }),
     columnHelper.accessor("isDefault", {
       size: PROFILE_COLUMN_SIZE.isDefault,
-      meta: { label: "Padrão do convite" },
+      meta: { label: "Padrão do convite", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => (getValue() ? <Badge variant="info">Padrão</Badge> : null),
     }),
@@ -53,7 +56,7 @@ export function createProfileColumns(): DataTableColumn<Profile>[] {
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: PROFILE_COLUMN_SIZE.actions,
       minSize: PROFILE_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

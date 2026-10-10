@@ -55,7 +55,19 @@ export function LoginCredentialsForm({
           <FieldError errors={[errors.email]} />
         </Field>
         <Field data-invalid={errors.password ? true : undefined}>
-          <FieldLabel htmlFor="login-password">Senha</FieldLabel>
+          <div className="flex items-center justify-between gap-3">
+            <FieldLabel htmlFor="login-password">Senha</FieldLabel>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              className="h-auto p-0"
+              disabled={isPending}
+              onClick={() => onForgotPassword(getValues("email"))}
+            >
+              Esqueci minha senha
+            </Button>
+          </div>
           <PasswordInput
             id="login-password"
             autoComplete="current-password"
@@ -65,21 +77,10 @@ export function LoginCredentialsForm({
           />
           <FieldError errors={[errors.password]} />
         </Field>
-        <div className="flex gap-3">
-          <Button type="submit" className="flex-1" disabled={isPending}>
-            {isPending ? <Spinner data-icon="inline-start" /> : null}
-            {isPending ? "Entrando..." : "Entrar"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            disabled={isPending}
-            onClick={() => onForgotPassword(getValues("email"))}
-          >
-            Esqueci minha senha
-          </Button>
-        </div>
+        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+          {isPending ? <Spinner data-icon="inline-start" /> : null}
+          {isPending ? "Entrando..." : "Entrar"}
+        </Button>
       </FieldGroup>
     </form>
   );

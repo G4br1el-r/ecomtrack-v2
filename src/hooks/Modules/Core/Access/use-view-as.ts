@@ -15,7 +15,7 @@ export function useViewAs() {
   const enter = useMutation({
     mutationFn: ({ request }: { label: string; request: () => Promise<ViewAs> }) => request(),
     onSuccess: (viewAs, { label }) => {
-      start({ token: viewAs.accessToken, expiresAt: viewAs.expiresAt, label, permissions: viewAs.permissions });
+      start({ token: viewAs.accessToken, expiresAt: viewAs.expiresAt, label });
       resetData();
     },
   });

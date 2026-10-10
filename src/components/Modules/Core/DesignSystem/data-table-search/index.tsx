@@ -30,7 +30,7 @@ export function DataTableSearch({
 
   return (
     <form
-      className="flex w-full gap-2 sm:max-w-md"
+      className="flex min-w-0 flex-1 basis-56 gap-2 sm:max-w-md"
       onSubmit={(event) => {
         event.preventDefault();
         onSearch(draft.trim());

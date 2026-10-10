@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { buildCoverageReport } from "./build-coverage-report";
 
-const TOTAL_ENDPOINTS = 83;
+const TOTAL_ENDPOINTS = 90;
 
 describe("buildCoverageReport", () => {
   it("só conta o endpoint que respondeu sem erro de servidor nem limite", () => {
@@ -15,7 +15,7 @@ describe("buildCoverageReport", () => {
 
     expect(missing).toHaveLength(TOTAL_ENDPOINTS - 2);
     expect(missing).toEqual(expect.arrayContaining(["users.update", "users.activate"]));
-    expect(markdown).toContain("Cobertura E2E dos endpoints: 2/83");
+    expect(markdown).toContain(`Cobertura E2E dos endpoints: 2/${TOTAL_ENDPOINTS}`);
     expect(markdown).toContain("| ✅ | GET | `/users` | 200 | lista |");
   });
 });

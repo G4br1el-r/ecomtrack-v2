@@ -8,11 +8,11 @@ import { HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
 import { INVITES_MOCK } from "@/mocks/Modules/Administracao/Usuarios/invites";
 import { PROFILES_MOCK } from "@/mocks/Modules/Administracao/Usuarios/profiles";
 import { USERS_MOCK } from "@/mocks/Modules/Administracao/Usuarios/users";
+import { ownerPagePermissionsMock } from "@/mocks/Modules/Core/Access/owner-page-permissions";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
 import { useUsersPanelStore } from "@/store/Modules/Administracao/Usuarios/users-panel-store";
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 import { useDataTablePreferencesStore } from "@/store/Modules/Core/DesignSystem/data-table-preferences-store";
-
 import { UsersWorkspace } from ".";
 
 const toastSuccess = vi.fn();
@@ -20,14 +20,6 @@ const toastSuccess = vi.fn();
 vi.mock("sonner", () => ({ toast: { success: (...args: unknown[]) => toastSuccess(...args), error: vi.fn() } }));
 
 const PAGE_INFO = { page: 1, pageSize: 10, totalPages: 1, hasPreviousPage: false, hasNextPage: false };
-const OWNER_PERMISSIONS = {
-  profileId: "o",
-  profileName: "Owner",
-  version: 1,
-  kind: "Owner",
-  pages: [],
-  components: [],
-};
 const CATALOG = [
   {
     code: "usuarios",
@@ -49,10 +41,11 @@ function stubApi() {
     vi.fn((input: string, init?: RequestInit) => {
       const url = new URL(input, "http://localhost");
       const path = url.pathname.replace("/api/modules/core/ecomtrack", "");
+      const permissionsMatch = path.match(/^\/permissions\/([^/]+)\/components$/);
+      if (permissionsMatch) return Promise.resolve(Response.json(ownerPagePermissionsMock(permissionsMatch[1])));
       const method = init?.method ?? "GET";
       calls.push({ method, path, search: url.searchParams, body: init?.body ? JSON.parse(String(init.body)) : null });
       const reply = (body: unknown) => Promise.resolve(Response.json(body));
-      if (path === "/permissions/me") return reply(OWNER_PERMISSIONS);
       if (path === "/users/u-1" && method === "GET") return reply({ ...USERS_MOCK[0], firstName: "Ana Paula" });
       if (path === "/users/u-1" && method === "PUT")
         return reply({ ...USERS_MOCK[0], ...(init?.body ? JSON.parse(String(init.body)) : {}) });

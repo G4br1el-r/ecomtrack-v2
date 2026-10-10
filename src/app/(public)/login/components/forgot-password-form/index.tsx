@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, MailCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { FormErrorAlert } from "@/components/Modules/Core/DesignSystem/form-error-alert";
@@ -14,6 +14,8 @@ import {
   type ForgotPasswordFormValues,
   forgotPasswordSchema,
 } from "@/schemas/Modules/Core/Auth/forgot-password-schema";
+
+import { LoginDrawnIcon } from "../login-drawn-icon";
 
 export function ForgotPasswordForm({ defaultEmail, onBack }: { defaultEmail: string; onBack: () => void }) {
   const { mutate: sendLink, isPending, isSuccess, error, variables } = useForgotPassword();
@@ -28,15 +30,15 @@ export function ForgotPasswordForm({ defaultEmail, onBack }: { defaultEmail: str
 
   if (isSuccess) {
     return (
-      <div role="status" className="flex flex-col items-center gap-4 text-center">
-        <span className="grid size-12 place-items-center rounded-full bg-success-soft text-success">
-          <MailCheck aria-hidden="true" />
+      <div role="status" className="flex flex-col items-start gap-5">
+        <span className="grid size-16 place-items-center rounded-full bg-success-soft text-success ring-8 ring-success-soft/40">
+          <LoginDrawnIcon name="sent" className="size-7" />
         </span>
         <p className="text-sm">
           Se <strong className="font-medium">{variables?.email}</strong> estiver cadastrado, você vai receber um link
           para criar uma nova senha. Ele vale por 60 minutos.
         </p>
-        <Button type="button" variant="outline" className="w-full" onClick={onBack}>
+        <Button type="button" variant="outline" size="lg" className="w-full" onClick={onBack}>
           <ArrowLeft data-icon="inline-start" aria-hidden="true" />
           Voltar para o login
         </Button>
@@ -60,16 +62,14 @@ export function ForgotPasswordForm({ defaultEmail, onBack }: { defaultEmail: str
           />
           <FieldError errors={[errors.email]} />
         </Field>
-        <div className="flex gap-3">
-          <Button type="submit" className="flex-1" disabled={isPending}>
-            {isPending ? <Spinner data-icon="inline-start" /> : null}
-            {isPending ? "Enviando..." : "Enviar link"}
-          </Button>
-          <Button type="button" variant="outline" className="flex-1" disabled={isPending} onClick={onBack}>
-            <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-            Voltar
-          </Button>
-        </div>
+        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+          {isPending ? <Spinner data-icon="inline-start" /> : null}
+          {isPending ? "Enviando..." : "Enviar link"}
+        </Button>
+        <Button type="button" variant="ghost" size="sm" className="self-start" disabled={isPending} onClick={onBack}>
+          <ArrowLeft data-icon="inline-start" aria-hidden="true" />
+          Voltar
+        </Button>
       </FieldGroup>
     </form>
   );

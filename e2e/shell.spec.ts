@@ -38,5 +38,41 @@ test("o menu pinta de azul as rotas ligadas à API", async ({ page }) => {
 
   const menuLink = (href: string) => page.locator(`[data-sidebar="menu-button"][href="${href}"]`);
   await expect(menuLink("/administracao/usuarios")).toHaveAttribute("data-integrated", "true");
-  await expect(menuLink("/visao-geral/dashboard")).not.toHaveAttribute("data-integrated");
+  await expect(menuLink("/administracao/usuarios").locator("svg").first()).toBeVisible();
+});
+
+test("o menu e os botões vêm das permissões da API", async ({ page, ownerApi, e2eCompany }) => {
+  const menu = await ownerApi.get<{ pages: { code: string; route: string | null; enabled: boolean }[] }[]>(
+    "/permissions/menu",
+    e2eCompany.id,
+  );
+  const users = menu.flatMap((section) => section.pages).find((item) => item.code === "usuarios");
+  expect(users?.enabled).toBe(true);
+
+  const components = await ownerApi.get<{ pageEnabled: boolean; components: { enabled: boolean }[] }>(
+    "/permissions/usuarios/components",
+    e2eCompany.id,
+  );
+  expect(components.pageEnabled).toBe(true);
+  expect(components.components.every((component) => component.enabled)).toBe(true);
+
+  await page.goto("/administracao/usuarios");
+  await expect(page.getByRole("button", { name: "Convidar usuário" })).toBeEnabled();
+});
+
+test("preferências: a quantidade por página da tabela fica salva na API", async ({ page, ownerApi, e2eCompany }) => {
+  const key = "table.administracao-auditoria";
+  await ownerApi.send("PUT", `/auth/me/preferences/${key}`, { value: { pageSize: 20 } }, e2eCompany.id);
+  expect(
+    (await ownerApi.get<{ value: { pageSize: number } }>(`/auth/me/preferences/${key}`, e2eCompany.id)).value,
+  ).toEqual({ pageSize: 20 });
+
+  await page.goto("/administracao/auditoria");
+  await expect(page.getByRole("combobox", { name: "Itens por página" }).first()).toHaveText("20");
+
+  const all = await ownerApi.get<{ key: string }[]>("/auth/me/preferences", e2eCompany.id);
+  expect(all.map((preference) => preference.key)).toContain(key);
+
+  const removed = await ownerApi.call("DELETE", `/auth/me/preferences/${key}`, { companyId: e2eCompany.id });
+  expect(removed.status()).toBe(204);
 });

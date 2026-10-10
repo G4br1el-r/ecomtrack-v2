@@ -25,13 +25,13 @@ export function TopProductsCard() {
       <CardHeader>
         <CardTitle>Top {TOP_PRODUCTS_LIMIT} produtos</CardTitle>
         <CardDescription>Mais vendidos no período, ordenados por faturamento</CardDescription>
-        <CardAction>
+        <CardAction className="max-sm:col-span-2 max-sm:col-start-1 max-sm:row-span-1 max-sm:row-start-3 max-sm:mt-2 max-sm:w-full">
           <SearchField
             aria-label="Buscar produto por nome ou SKU"
             placeholder="Buscar por nome ou SKU"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-56 sm:w-64"
+            className="w-full sm:w-64"
           />
         </CardAction>
       </CardHeader>

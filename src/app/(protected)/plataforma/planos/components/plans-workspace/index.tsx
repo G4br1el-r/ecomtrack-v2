@@ -23,7 +23,7 @@ const COLUMNS = createPlanColumns();
 
 export function PlansWorkspace() {
   const table = useDataTableServerState(PLANS_TABLE_SETTINGS);
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.plans.create.page);
   const open = usePlanPanelStore((state) => state.open);
   const { data, isPending, isError, refetch } = usePlans(table.query);
 

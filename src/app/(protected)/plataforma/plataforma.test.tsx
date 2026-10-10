@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MotionGlobalConfig } from "motion/react";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { ownerPagePermissionsMock } from "@/mocks/Modules/Core/Access/owner-page-permissions";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
 import { COMPANIES_MOCK } from "@/mocks/Modules/Plataforma/Empresas/companies";
 import { PLANS_MOCK } from "@/mocks/Modules/Plataforma/Planos/plans";
@@ -10,7 +11,6 @@ import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 import { useDataTablePreferencesStore } from "@/store/Modules/Core/DesignSystem/data-table-preferences-store";
 import { useCompanyPanelStore } from "@/store/Modules/Plataforma/Empresas/company-panel-store";
 import { usePlanPanelStore } from "@/store/Modules/Plataforma/Planos/plan-panel-store";
-
 import { CompaniesWorkspace } from "./empresas/components/companies-workspace";
 import { PlansWorkspace } from "./planos/components/plans-workspace";
 
@@ -37,13 +37,12 @@ function stubApi() {
     "fetch",
     vi.fn((input: string, init?: RequestInit) => {
       const path = new URL(input, "http://localhost").pathname.replace("/api/modules/core/ecomtrack", "");
+      const permissionsMatch = path.match(/^\/permissions\/([^/]+)\/components$/);
+      if (permissionsMatch) return Promise.resolve(Response.json(ownerPagePermissionsMock(permissionsMatch[1])));
       const method = init?.method ?? "GET";
       const body = init?.body ? JSON.parse(String(init.body)) : null;
       calls.push({ method, path, headers: new Headers(init?.headers), body });
       const reply = (value: unknown) => Promise.resolve(Response.json(value));
-      if (path === "/permissions/me") {
-        return reply({ profileId: "o", profileName: "Owner", version: 1, kind: "Owner", pages: [], components: [] });
-      }
       if (path === "/companies" && method === "GET") {
         return reply({ ...PAGE, items: COMPANIES_MOCK, totalCount: 2, metadata: { active: 1, suspended: 1 } });
       }

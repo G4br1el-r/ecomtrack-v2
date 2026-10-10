@@ -7,7 +7,10 @@ import { PersonCell } from "@/components/Modules/Administracao/Usuarios/person-c
 import { DataTableSortHeader } from "@/components/Modules/Core/DesignSystem/data-table-sort-header";
 import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-cell";
 import { AUDIT_LOG_COLUMN_SIZE } from "@/constants/Modules/Administracao/Auditoria/audit-logs";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import { EMPTY_VALUE } from "@/constants/Modules/Core/DesignSystem/number-format";
 import type { AuditLog } from "@/schemas/Modules/Administracao/Auditoria/audit-log-schema";
 
@@ -23,13 +26,13 @@ export function createAuditLogColumns(): DataTableColumn<AuditLog>[] {
     }),
     columnHelper.accessor("type", {
       size: AUDIT_LOG_COLUMN_SIZE.type,
-      meta: { label: "Tipo" },
+      meta: { label: "Tipo", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => <AuditTypeBadge type={getValue()} />,
     }),
     columnHelper.accessor("description", {
       size: AUDIT_LOG_COLUMN_SIZE.description,
-      meta: { label: "O que aconteceu" },
+      meta: { label: "O que aconteceu", card: "title" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ row }) => (
         <div className="min-w-0" title={row.original.description ?? undefined}>
@@ -73,7 +76,7 @@ export function createAuditLogColumns(): DataTableColumn<AuditLog>[] {
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: AUDIT_LOG_COLUMN_SIZE.actions,
       minSize: AUDIT_LOG_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

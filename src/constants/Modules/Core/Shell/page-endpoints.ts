@@ -5,7 +5,11 @@ import type { BadgeTone } from "@/@types/Modules/Core/DesignSystem/badge-tone";
 export const SHELL_ENDPOINT_KEYS: readonly ApiEndpointKey[] = [
   "auth.refresh",
   "auth.logout",
-  "permissions.mine",
+  "permissions.menu",
+  "permissions.components",
+  "preferences.list",
+  "preferences.save",
+  "preferences.remove",
   "companies.mine",
   "companies.list",
 ];
@@ -69,6 +73,9 @@ export const PAGE_ENDPOINT_KEYS: Readonly<Record<string, readonly ApiEndpointKey
     "aiIntegrations.create",
     "aiIntegrations.update",
     "aiIntegrations.remove",
+    "aiTasks.list",
+    "aiTasks.generate",
+    "preferences.get",
   ],
   "/administracao/fornecedores": [
     "supplierIntegrations.providers",

@@ -2,12 +2,14 @@ import { z } from "zod";
 
 export const notificationPartSchema = z.enum(["Header", "Footer", "Message"]);
 
+export const notificationChannelSchema = z.enum(["Email"]);
+
 export const notificationSummarySchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
   part: notificationPartSchema,
-  channel: z.string(),
+  channel: notificationChannelSchema,
   canBeDisabled: z.boolean(),
   isEnabled: z.boolean(),
   isCustom: z.boolean(),

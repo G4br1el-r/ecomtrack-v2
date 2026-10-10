@@ -19,7 +19,7 @@ const COLUMNS = createProfileColumns();
 
 export function ProfilesTable() {
   const table = useDataTableServerState(PROFILES_TABLE_SETTINGS);
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.profiles.create.page);
   const open = useUsersPanelStore((state) => state.open);
   const { data, isPending, isError, refetch } = useProfiles(table.query);
   const canCreate = can(API_ENDPOINTS.profiles.create.component);

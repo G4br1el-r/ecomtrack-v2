@@ -85,3 +85,5 @@ export const SCRATCH_HINT_ROTATE = [0, -25, 0, -25, 0];
 export const SCRATCH_HINT_DURATION_SECONDS = 2.2;
 export const SCRATCH_HINT_REPEAT_DELAY_SECONDS = 0.8;
 export const SCRATCH_SHAKE_X = [0, -5, 5, -3, 2, 0];
+
+export const NOT_FOUND_ROUTE = "/nao-encontrado";

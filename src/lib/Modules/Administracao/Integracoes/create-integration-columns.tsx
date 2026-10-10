@@ -7,7 +7,10 @@ import { DataTableSortHeader } from "@/components/Modules/Core/DesignSystem/data
 import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-cell";
 import { Badge } from "@/components/ui/badge";
 import { INTEGRATION_COLUMN_SIZE } from "@/constants/Modules/Administracao/Integracoes/integrations";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import type { CompanyIntegration } from "@/schemas/Modules/Administracao/Integracoes/company-integration-schema";
 
 const columnHelper = createColumnHelper<DataTableFeatures, CompanyIntegration>();
@@ -32,7 +35,7 @@ export function createIntegrationColumns(area: IntegrationArea): DataTableColumn
     }),
     columnHelper.accessor("isActive", {
       size: INTEGRATION_COLUMN_SIZE.status,
-      meta: { label: "Situação" },
+      meta: { label: "Situação", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) =>
         getValue() ? <Badge variant="success">Ativa</Badge> : <Badge variant="secondary">Pausada</Badge>,
@@ -45,7 +48,7 @@ export function createIntegrationColumns(area: IntegrationArea): DataTableColumn
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: INTEGRATION_COLUMN_SIZE.actions,
       minSize: INTEGRATION_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

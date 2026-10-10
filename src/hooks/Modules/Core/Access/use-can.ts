@@ -2,9 +2,13 @@
 
 import { hasPermission } from "@/lib/Modules/Core/Access/has-permission";
 
-import { useMyPermissions } from "./use-my-permissions";
+import { usePagePermissions } from "./use-page-permissions";
 
-export function useCan() {
-  const { data, isPending } = useMyPermissions();
-  return { can: (code: string) => hasPermission(data, code), isChecking: isPending };
+export function useCan(pageCode: string | undefined) {
+  const { data, isPending } = usePagePermissions(pageCode);
+  return {
+    can: (componentCode?: string) => hasPermission(data, componentCode),
+    pageEnabled: data?.pageEnabled ?? false,
+    isChecking: isPending,
+  };
 }

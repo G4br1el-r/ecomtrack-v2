@@ -1,45 +1,38 @@
 import { describe, expect, it } from "vitest";
 
-import type { ProfilePermissions } from "@/schemas/Modules/Core/Access/profile-permissions-schema";
+import type { PagePermissionComponents } from "@/schemas/Modules/Core/Access/page-permission-components-schema";
 
 import { hasPermission } from "./has-permission";
 
-const COMPANY_PROFILE: ProfilePermissions = {
-  profileId: "p1",
-  profileName: "Vendas",
-  version: 1,
-  kind: "Company",
-  pages: [
-    {
-      code: "usuarios",
-      name: "Usuários",
-      description: null,
-      route: "/usuarios",
-      icon: null,
-      showInMenu: true,
-      sortOrder: 1,
-      section: null,
-    },
+const USERS_PAGE: PagePermissionComponents = {
+  pageCode: "usuarios",
+  pageEnabled: true,
+  components: [
+    { code: "usuarios.editarusuarios", name: "Editar", description: null, icon: "pencil", enabled: true },
+    { code: "usuarios.desativarusuario", name: "Desativar", description: null, icon: null, enabled: false },
   ],
-  components: ["usuarios.editarusuarios"],
 };
 
 describe("hasPermission", () => {
-  it("libera página e componente do perfil", () => {
-    expect(hasPermission(COMPANY_PROFILE, "usuarios")).toBe(true);
-    expect(hasPermission(COMPANY_PROFILE, "usuarios.editarusuarios")).toBe(true);
+  it("libera o componente habilitado da página", () => {
+    expect(hasPermission(USERS_PAGE, "usuarios.editarusuarios")).toBe(true);
   });
 
-  it("bloqueia o que não está no perfil", () => {
-    expect(hasPermission(COMPANY_PROFILE, "usuarios.desativarusuario")).toBe(false);
-    expect(hasPermission(COMPANY_PROFILE, "empresas")).toBe(false);
+  it("bloqueia componente desabilitado ou que não existe na página", () => {
+    expect(hasPermission(USERS_PAGE, "usuarios.desativarusuario")).toBe(false);
+    expect(hasPermission(USERS_PAGE, "usuarios.inexistente")).toBe(false);
   });
 
-  it("libera tudo para o Owner", () => {
-    expect(hasPermission({ ...COMPANY_PROFILE, kind: "Owner", pages: [], components: [] }, "empresas")).toBe(true);
+  it("sem componente informado, responde se a página está liberada", () => {
+    expect(hasPermission(USERS_PAGE)).toBe(true);
+    expect(hasPermission({ ...USERS_PAGE, pageEnabled: false })).toBe(false);
+  });
+
+  it("bloqueia tudo quando a página está bloqueada", () => {
+    expect(hasPermission({ ...USERS_PAGE, pageEnabled: false }, "usuarios.editarusuarios")).toBe(false);
   });
 
   it("bloqueia enquanto as permissões não chegaram", () => {
-    expect(hasPermission(undefined, "usuarios")).toBe(false);
+    expect(hasPermission(undefined, "usuarios.editarusuarios")).toBe(false);
   });
 });

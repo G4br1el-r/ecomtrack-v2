@@ -17,7 +17,7 @@ import { useCompanyContextStore } from "@/store/Modules/Core/Shell/company-conte
 import { useCompanyPanelStore } from "@/store/Modules/Plataforma/Empresas/company-panel-store";
 
 export function CompanyRowActions({ company }: { company: Company }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.companies.update.page);
   const queryClient = useQueryClient();
   const open = useCompanyPanelStore((state) => state.open);
   const setCompany = useCompanyContextStore((state) => state.setCompany);

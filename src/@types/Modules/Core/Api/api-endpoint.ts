@@ -1,3 +1,5 @@
+import type { PinType } from "@/schemas/Modules/Core/Conta/pin-type-schema";
+
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export type ApiEndpoint = {
@@ -8,4 +10,5 @@ export type ApiEndpoint = {
   page?: string;
   component?: string;
   platformScope?: boolean;
+  securityPin?: PinType;
 };

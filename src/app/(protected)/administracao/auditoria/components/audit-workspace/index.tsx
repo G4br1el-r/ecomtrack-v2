@@ -15,6 +15,8 @@ import { AUDIT_TYPE_META } from "@/constants/Modules/Administracao/Auditoria/aud
 import { AUDIT_LOGS_TABLE_SETTINGS } from "@/constants/Modules/Administracao/Auditoria/audit-logs";
 import { ALL_FILTER_VALUE } from "@/constants/Modules/Core/DesignSystem/segmented-filter";
 import { useAuditLogs } from "@/hooks/Modules/Administracao/Auditoria/use-audit-logs";
+import { usePagePermissions } from "@/hooks/Modules/Core/Access/use-page-permissions";
+import { usePermissionMenu } from "@/hooks/Modules/Core/Access/use-permission-menu";
 import { useDataTableServerState } from "@/hooks/Modules/Core/DesignSystem/use-data-table-server-state";
 import { createAuditLogColumns } from "@/lib/Modules/Administracao/Auditoria/create-audit-log-columns";
 import { type AuditType, auditTypeSchema } from "@/schemas/Modules/Administracao/Auditoria/audit-type-schema";
@@ -31,9 +33,23 @@ export function AuditWorkspace() {
   const table = useDataTableServerState(AUDIT_LOGS_TABLE_SETTINGS);
   const [type, setType] = useState<AuditType | typeof ALL_FILTER_VALUE>(ALL_FILTER_VALUE);
   const [period, setPeriod] = useState<DateRange>({});
+  const [pageCode, setPageCode] = useState<string>(ALL_FILTER_VALUE);
+  const [actionCode, setActionCode] = useState<string>(ALL_FILTER_VALUE);
+  const { data: menu } = usePermissionMenu();
+  const { data: pageComponents } = usePagePermissions(pageCode === ALL_FILTER_VALUE ? undefined : pageCode);
+  const pageOptions: ComboboxOption[] = [
+    { value: ALL_FILTER_VALUE, label: "Todas as páginas" },
+    ...(menu ?? []).flatMap((section) => section.pages.map((page) => ({ value: page.code, label: page.name }))),
+  ];
+  const actionOptions: ComboboxOption[] = [
+    { value: ALL_FILTER_VALUE, label: "Todas as ações" },
+    ...(pageComponents?.components ?? []).map((component) => ({ value: component.code, label: component.name })),
+  ];
   const { data, isPending, isError, refetch } = useAuditLogs({
     ...table.query,
     Type: type === ALL_FILTER_VALUE ? undefined : type,
+    PageCode: pageCode === ALL_FILTER_VALUE ? undefined : pageCode,
+    ActionCode: actionCode === ALL_FILTER_VALUE ? undefined : actionCode,
     From: period.from ? startOfDay(period.from).toISOString() : undefined,
     To: period.to ? endOfDay(period.to).toISOString() : undefined,
   });
@@ -72,6 +88,31 @@ export function AuditWorkspace() {
                   }}
                   className="h-9 w-44"
                 />
+                <Combobox
+                  label="Página"
+                  options={pageOptions}
+                  value={pageCode}
+                  onValueChange={(next) => {
+                    setPageCode(next);
+                    setActionCode(ALL_FILTER_VALUE);
+                    table.resetPage();
+                  }}
+                  searchPlaceholder="Buscar página..."
+                  className="h-9 w-48"
+                />
+                {pageCode === ALL_FILTER_VALUE ? null : (
+                  <Combobox
+                    label="Ação"
+                    options={actionOptions}
+                    value={actionCode}
+                    onValueChange={(next) => {
+                      setActionCode(next);
+                      table.resetPage();
+                    }}
+                    searchPlaceholder="Buscar ação..."
+                    className="h-9 w-48"
+                  />
+                )}
                 <DateRangeField
                   value={period}
                   onChange={(next) => {
@@ -82,7 +123,12 @@ export function AuditWorkspace() {
               </>
             ),
           }}
-          empty={<EmptyState title="Nenhum registro encontrado" description="Ajuste a busca, o tipo ou o período." />}
+          empty={
+            <EmptyState
+              title="Nenhum registro encontrado"
+              description="Ajuste a busca, o tipo, a página, a ação ou o período."
+            />
+          }
         />
       )}
       <AuditDetailSheet />

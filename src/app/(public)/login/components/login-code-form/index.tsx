@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -17,6 +18,7 @@ import { formatDisplayTime } from "@/lib/Modules/Core/DesignSystem/format-displa
 import type { LoginChallenge } from "@/schemas/Modules/Core/Auth/login-challenge-schema";
 import { type LoginCodeFormValues, loginCodeSchema } from "@/schemas/Modules/Core/Auth/login-code-schema";
 
+import { LoginFailureAnimation } from "../login-failure-animation";
 import { LoginSuccessAnimation } from "../login-success-animation";
 
 export function LoginCodeForm({
@@ -33,10 +35,13 @@ export function LoginCodeForm({
   const router = useRouter();
   const { mutate: verify, isPending: verifying, isSuccess: verified, variables } = useVerifyLogin();
   const { mutate: resend, isPending: resending } = useResendLoginCode();
+  const [failedCode, setFailedCode] = useState<string | null>(null);
+  const busy = verifying || failedCode !== null;
   const {
     control,
     handleSubmit,
     setError,
+    setValue,
     resetField,
     formState: { errors },
   } = useForm<LoginCodeFormValues>({ resolver: zodResolver(loginCodeSchema), defaultValues: { code: "" } });
@@ -48,7 +53,12 @@ export function LoginCodeForm({
   const submit = handleSubmit(({ code }) =>
     verify(
       { challengeId: challenge.challengeId, code },
-      { onError: (error) => setError("code", { message: error.message }, { shouldFocus: true }) },
+      {
+        onError: (error) => {
+          setFailedCode(code);
+          setError("code", { message: error.message });
+        },
+      },
     ),
   );
 
@@ -67,52 +77,59 @@ export function LoginCodeForm({
       <FieldGroup>
         <Field data-invalid={errors.code ? true : undefined}>
           <FieldLabel htmlFor="login-code">Código de verificação</FieldLabel>
-          <Controller
-            control={control}
-            name="code"
-            render={({ field }) => (
-              <CodeInput
-                id="login-code"
-                length={LOGIN_CODE_LENGTH}
-                ref={field.ref}
-                name={field.name}
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                onComplete={() => submit()}
-                autoComplete="one-time-code"
-                autoFocus
-                disabled={verifying}
-                invalid={Boolean(errors.code)}
-              />
-            )}
-          />
+          {failedCode ? (
+            <LoginFailureAnimation
+              code={failedCode}
+              onComplete={() => {
+                setValue("code", "");
+                setFailedCode(null);
+              }}
+            />
+          ) : (
+            <Controller
+              control={control}
+              name="code"
+              render={({ field }) => (
+                <CodeInput
+                  id="login-code"
+                  length={LOGIN_CODE_LENGTH}
+                  ref={field.ref}
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  onComplete={() => submit()}
+                  autoComplete="one-time-code"
+                  autoFocus
+                  disabled={verifying}
+                  invalid={Boolean(errors.code)}
+                />
+              )}
+            />
+          )}
           <FieldDescription className="text-center">
             Enviado para {challenge.maskedEmail}. Vale até {formatDisplayTime(challenge.expiresAt)}.
           </FieldDescription>
           <FieldError errors={[errors.code]} className="text-center" />
         </Field>
-        <div className="flex gap-3">
-          <Button type="submit" className="flex-1" disabled={verifying}>
-            {verifying ? <Spinner data-icon="inline-start" /> : null}
-            {verifying ? "Verificando código..." : "Verificar"}
-          </Button>
-          <Button type="button" variant="outline" className="flex-1" onClick={onBack} disabled={verifying}>
+        <Button type="submit" size="lg" className="w-full" disabled={busy}>
+          {verifying ? <Spinner data-icon="inline-start" /> : null}
+          {verifying ? "Verificando código..." : "Verificar"}
+        </Button>
+        <div className="flex items-center justify-between">
+          <Button type="button" variant="ghost" size="sm" onClick={onBack} disabled={busy}>
             <ArrowLeft data-icon="inline-start" aria-hidden="true" />
             Voltar
           </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={resendCode} disabled={resending || busy}>
+            {resending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <RotateCcw data-icon="inline-start" aria-hidden="true" />
+            )}
+            Reenviar código
+          </Button>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="self-center"
-          onClick={resendCode}
-          disabled={resending || verifying}
-        >
-          {resending ? <Spinner data-icon="inline-start" /> : <RotateCcw data-icon="inline-start" aria-hidden="true" />}
-          Reenviar código
-        </Button>
       </FieldGroup>
     </form>
   );

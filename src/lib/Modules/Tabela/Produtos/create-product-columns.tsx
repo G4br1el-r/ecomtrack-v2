@@ -49,7 +49,7 @@ export function createProductColumns(): DataTableColumn<Product>[] {
     }),
     columnHelper.accessor("status", {
       size: PRODUCT_COLUMN_SIZE.status,
-      meta: { label: "Status" },
+      meta: { label: "Status", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => {
         const status = PRODUCT_STATUS_BADGE[getValue()];
@@ -58,7 +58,7 @@ export function createProductColumns(): DataTableColumn<Product>[] {
     }),
     columnHelper.accessor("stock", {
       size: PRODUCT_COLUMN_SIZE.stock,
-      meta: { label: "Estoque" },
+      meta: { label: "Estoque", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="integer" />,
     }),
@@ -70,7 +70,7 @@ export function createProductColumns(): DataTableColumn<Product>[] {
     }),
     columnHelper.accessor("price", {
       size: PRODUCT_COLUMN_SIZE.price,
-      meta: { label: "Preço" },
+      meta: { label: "Preço", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="currency" />,
     }),
@@ -83,7 +83,7 @@ export function createProductColumns(): DataTableColumn<Product>[] {
     columnHelper.accessor((product) => getShare(product.price - product.cost, product.price), {
       id: "margin",
       size: PRODUCT_COLUMN_SIZE.margin,
-      meta: { label: "Margem" },
+      meta: { label: "Margem", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ getValue }) => (
         <div className={cn(getValue() < 0 && "text-destructive")}>

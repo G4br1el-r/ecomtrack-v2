@@ -21,7 +21,6 @@ describe("ViewAsBanner", () => {
       token: "t",
       expiresAt: "2026-10-07T15:30:00",
       label: "Vendas",
-      permissions: { profileId: "p", profileName: "Vendas", version: 1, kind: "Company", pages: [], components: [] },
     });
     render(
       <QueryClientProvider client={new QueryClient()}>

@@ -2,16 +2,18 @@ import type { z } from "zod";
 
 import type { ApiEndpoint } from "@/@types/Modules/Core/Api/api-endpoint";
 import type { ApiRequestOptions } from "@/@types/Modules/Core/Api/api-request";
-import { COMPANY_HEADER, HTTP_STATUS } from "@/constants/Modules/Core/Api/http";
+import { COMPANY_HEADER, HTTP_STATUS, SECURITY_PIN_HEADER } from "@/constants/Modules/Core/Api/http";
 import { SESSION_EXPIRED_ERROR } from "@/constants/Modules/Core/Auth/auth";
 import { buildApiUrl } from "@/lib/Modules/Core/Api/build-api-url";
 import { getLoginHref } from "@/lib/Modules/Core/Auth/get-login-href";
 import { refreshAccessToken } from "@/services/Modules/Core/Auth/refresh-access-token";
+import { useSecurityPinStore } from "@/store/Modules/Core/Access/security-pin-store";
 import { useViewAsStore } from "@/store/Modules/Core/Access/view-as-store";
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 import { useCompanyContextStore } from "@/store/Modules/Core/Shell/company-context-store";
 
 import { parseApiResponse } from "./parse-api-response";
+import { retryWithSecurityPin } from "./retry-with-security-pin";
 
 export async function requestApi<TSchema extends z.ZodType>(
   endpoint: ApiEndpoint,
@@ -28,6 +30,8 @@ export async function requestApi<TSchema extends z.ZodType>(
     if (token) headers.set("Authorization", `Bearer ${token}`);
     const sendCompany = !viewAs && !options.skipCompany && !endpoint.platformScope;
     if (sendCompany && user?.isPlatformOwner && company) headers.set(COMPANY_HEADER, company.id);
+    const pin = endpoint.securityPin ? useSecurityPinStore.getState().pins[endpoint.securityPin] : undefined;
+    if (pin) headers.set(SECURITY_PIN_HEADER, pin);
     if (options.body !== undefined) headers.set("Content-Type", "application/json");
     return fetch(url, {
       method: endpoint.method,
@@ -49,5 +53,6 @@ export async function requestApi<TSchema extends z.ZodType>(
     }
     response = await send();
   }
+  if (endpoint.securityPin) response = await retryWithSecurityPin(endpoint.securityPin, response, send);
   return parseApiResponse(response, schema);
 }

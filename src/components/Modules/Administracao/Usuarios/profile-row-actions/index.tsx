@@ -16,7 +16,7 @@ import { viewAsProfile } from "@/services/Modules/Administracao/Usuarios/view-as
 import { useUsersPanelStore } from "@/store/Modules/Administracao/Usuarios/users-panel-store";
 
 export function ProfileRowActions({ profile }: { profile: Profile }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.profiles.update.page);
   const open = useUsersPanelStore((state) => state.open);
   const { enter } = useViewAs();
   const [confirming, setConfirming] = useState(false);

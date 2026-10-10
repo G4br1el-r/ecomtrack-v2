@@ -18,7 +18,7 @@ import { saveNotificationDefault } from "@/services/Modules/Administracao/Comuni
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
 
 export function NotificationEditorActions({ detail, onClose }: { detail: NotificationDetail; onClose: () => void }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.communication.update.page);
   const email = useSessionStore((state) => state.user?.email);
   const [confirmingRestore, setConfirmingRestore] = useState(false);
   const canEdit = can(API_ENDPOINTS.communication.update.component);

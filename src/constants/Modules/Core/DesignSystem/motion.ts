@@ -16,6 +16,7 @@ export const DRAG_SCALE = 1.01;
 export const ICON_ROTATION_DEGREES = 90;
 
 export const LOOP_EASE = "easeInOut" as const;
+export const LINEAR_EASE = "linear" as const;
 export const REVEAL_STAGGER_SECONDS = 0.08;
 export const REVEAL_TWEEN = { duration: 0.5, ease: EASE_OUT } as const;
 export const FLOAT_OFFSET_Y = 6;

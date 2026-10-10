@@ -21,7 +21,10 @@ import {
   PIPELINE_STAGE_COLUMNS,
 } from "@/constants/Modules/Catalogo/EsteiraCadastro/pipeline-table";
 import { PRICING_RULES } from "@/constants/Modules/Catalogo/EsteiraCadastro/pricing";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import { EMPTY_VALUE } from "@/constants/Modules/Core/DesignSystem/number-format";
 import { getNetResult } from "@/lib/Modules/Catalogo/EsteiraCadastro/get-net-result";
 import { getSuggestedPrice } from "@/lib/Modules/Catalogo/EsteiraCadastro/get-suggested-price";
@@ -92,7 +95,7 @@ export function createPipelineColumns(stage: PipelineStage): DataTableColumn<Pip
     columnHelper.accessor("cost", {
       id: "cost",
       size: PIPELINE_COLUMN_SIZE.cost,
-      meta: { label: "Custo" },
+      meta: { label: "Custo", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ row }) => (
         <SupplierCostCell
@@ -112,14 +115,14 @@ export function createPipelineColumns(stage: PipelineStage): DataTableColumn<Pip
     columnHelper.accessor("price", {
       id: "price",
       size: PIPELINE_COLUMN_SIZE.price,
-      meta: { label: "Venda" },
+      meta: { label: "Venda", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ getValue }) => <NumberCell value={getValue()} kind="currency" />,
     }),
     columnHelper.accessor((product) => getNetResult(product.price, product.cost, PRICING_RULES)?.margin ?? null, {
       id: "margin",
       size: PIPELINE_COLUMN_SIZE.margin,
-      meta: { label: "Margem líquida" },
+      meta: { label: "Margem líquida", card: "highlight" },
       header: ({ column }) => <DataTableSortHeader column={column} align="right" />,
       cell: ({ row }) => <MarginCell result={getNetResult(row.original.price, row.original.cost, PRICING_RULES)} />,
     }),
@@ -135,7 +138,7 @@ export function createPipelineColumns(stage: PipelineStage): DataTableColumn<Pip
     columnHelper.accessor((product) => PIPELINE_STATUS[product.status].label, {
       id: "status",
       size: PIPELINE_COLUMN_SIZE.status,
-      meta: { label: "Status" },
+      meta: { label: "Status", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ row }) => {
         const status = PIPELINE_STATUS[row.original.status];
@@ -160,7 +163,7 @@ export function createPipelineColumns(stage: PipelineStage): DataTableColumn<Pip
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: PIPELINE_COLUMN_SIZE.actions,
       minSize: PIPELINE_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

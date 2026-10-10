@@ -12,7 +12,7 @@ const pathname = vi.hoisted(() => ({ current: "/administracao/usuarios" }));
 vi.mock("next/navigation", () => ({ usePathname: () => pathname.current }));
 
 const USERS_PAGE_ENDPOINTS = 21;
-const SHELL_ENDPOINTS = 5;
+const SHELL_ENDPOINTS = 9;
 
 function loginAs(isPlatformOwner: boolean) {
   useSessionStore.getState().setSession({ ...AUTH_TOKENS_MOCK, user: { ...AUTH_TOKENS_MOCK.user, isPlatformOwner } });

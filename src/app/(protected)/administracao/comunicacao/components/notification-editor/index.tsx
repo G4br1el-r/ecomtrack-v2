@@ -23,7 +23,7 @@ import { NotificationPreview } from "../notification-preview";
 import { VariableChips } from "../variable-chips";
 
 export function NotificationEditor({ detail, onSaved }: { detail: NotificationDetail; onSaved: () => void }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.communication.update.page);
   const isMessage = detail.part === "Message";
   const readOnly = !can(API_ENDPOINTS.communication.update.component);
   const initial = { subject: detail.subject ?? "", contentHtml: detail.contentHtml };

@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 import { FORGOT_PASSWORD_HREF } from "./src/constants/Modules/Core/Auth/auth";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.0.73"],
+  allowedDevOrigins: ["192.168.0.73", "192.168.0.218"],
   async redirects() {
     return [
       { source: "/reset-password/:token", destination: "/redefinir-senha/:token", permanent: false },

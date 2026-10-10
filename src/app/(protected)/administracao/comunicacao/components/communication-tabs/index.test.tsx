@@ -5,10 +5,10 @@ import { MotionGlobalConfig } from "motion/react";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { COMMUNICATION_MOCK, INVITE_NOTIFICATION_MOCK } from "@/mocks/Modules/Administracao/Comunicacao/communication";
+import { ownerPagePermissionsMock } from "@/mocks/Modules/Core/Access/owner-page-permissions";
 import { AUTH_TOKENS_MOCK } from "@/mocks/Modules/Core/Auth/auth-tokens";
 import { useNotificationEditorStore } from "@/store/Modules/Administracao/Comunicacao/notification-editor-store";
 import { useSessionStore } from "@/store/Modules/Core/Auth/session-store";
-
 import { CommunicationTabs } from ".";
 
 const toastSuccess = vi.fn();
@@ -24,13 +24,12 @@ function stubApi() {
     "fetch",
     vi.fn((input: string, init?: RequestInit) => {
       const path = new URL(input, "http://localhost").pathname.replace("/api/modules/core/ecomtrack", "");
+      const permissionsMatch = path.match(/^\/permissions\/([^/]+)\/components$/);
+      if (permissionsMatch) return Promise.resolve(Response.json(ownerPagePermissionsMock(permissionsMatch[1])));
       const method = init?.method ?? "GET";
       const body = init?.body ? JSON.parse(String(init.body)) : null;
       calls.push({ method, path, body });
       const reply = (value: unknown) => Promise.resolve(Response.json(value));
-      if (path === "/permissions/me") {
-        return reply({ profileId: "o", profileName: "Owner", version: 1, kind: "Owner", pages: [], components: [] });
-      }
       if (path === "/communication") return reply(COMMUNICATION_MOCK);
       if (path.endsWith("/preview")) return reply({ subject: body.subject, html: `<html>${body.contentHtml}</html>` });
       if (path.endsWith("/status")) return reply({ ...INVITE_NOTIFICATION_MOCK, isEnabled: body.isEnabled });

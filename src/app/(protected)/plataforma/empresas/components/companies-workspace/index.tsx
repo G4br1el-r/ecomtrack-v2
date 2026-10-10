@@ -25,7 +25,7 @@ const COLUMNS = createCompanyColumns();
 
 export function CompaniesWorkspace() {
   const table = useDataTableServerState(COMPANIES_TABLE_SETTINGS);
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.companies.create.page);
   const open = useCompanyPanelStore((state) => state.open);
   const [status, setStatus] = useState<CompanyStatus | typeof ALL_FILTER_VALUE>(ALL_FILTER_VALUE);
   const { data, isPending, isError, refetch } = useCompanies({

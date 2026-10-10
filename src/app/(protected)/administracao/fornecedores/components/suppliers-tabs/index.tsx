@@ -16,7 +16,7 @@ import { useCan } from "@/hooks/Modules/Core/Access/use-can";
 import { SupplierCatalog } from "../supplier-catalog";
 
 export function SuppliersTabs() {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.supplierProducts.list.page);
   const canSeeCatalog = can(API_ENDPOINTS.supplierProducts.list.component);
   return (
     <Tabs defaultValue={SUPPLIERS_TABS.connections} className="gap-4">

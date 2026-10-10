@@ -39,13 +39,13 @@ export function IntegrationArea({ area }: { area: Area }) {
   const settings = INTEGRATION_TABLE_SETTINGS[area];
   const copy = INTEGRATION_AREA_COPY[area];
   const table = useDataTableServerState(settings);
-  const { can } = useCan();
+  const { can } = useCan(INTEGRATION_AREA_ENDPOINTS[area].create.page);
   const open = useIntegrationPanelStore((state) => state.open);
   const isOwner = useSessionStore((state) => state.user?.isPlatformOwner ?? false);
   const company = useCompanyContextStore((state) => state.company);
   const providers = useIntegrationProviders(area);
   const integrations = useIntegrations(area, table.query);
-  const canConnect = can(INTEGRATION_AREA_ENDPOINTS[area].create.component ?? "");
+  const canConnect = can(INTEGRATION_AREA_ENDPOINTS[area].create.component);
   const items = integrations.data?.items ?? [];
 
   return (

@@ -274,7 +274,7 @@ Instaladas em `.claude/skills/` pelo CLI `skills` (`pnpm dlx skills add ... -a c
 #### Montagem
 
 - Colunas em `lib/Modules/<modulo>/<submodulo>/create-<entidade>-columns.tsx`, com `createColumnHelper<DataTableFeatures, T>()` e retorno `DataTableColumn<T>[]`. A tela chama a função uma vez fora do componente (`const COLUMNS = createXColumns();`).
-- Toda coluna de dado tem `meta: { label }` (nome no painel Colunas e na busca), `size` vindo de constante (`<ENTIDADE>_COLUMN_SIZE` em `constants/`) e `header: ({ column }) => <DataTableSortHeader column={column} />`. Coluna calculada usa `accessorFn` com `id`.
+- Toda coluna de dado tem `meta: { label }` (nome no painel Colunas, na busca e no card do mobile) e, quando fizer sentido, `card` (ver "Mobile: sempre cards"), `size` vindo de constante (`<ENTIDADE>_COLUMN_SIZE` em `constants/`) e `header: ({ column }) => <DataTableSortHeader column={column} />`. Coluna calculada usa `accessorFn` com `id`.
 - Células: número e moeda com `NumberCell`; produto com `ProductCell`; data com `formatDisplayDate`; status com `Badge` e tom vindo de constante (`<ENTIDADE>_STATUS_BADGE`). Célula específica do módulo vira componente em `components/Modules/<modulo>/<submodulo>/`.
 - Configuração da tabela numa constante `<ENTIDADE>_TABLE_SETTINGS: DataTableSettings` em `constants/Modules/<modulo>/<submodulo>/`:
   - `id` único e estável (é a chave das preferências salvas no navegador);
@@ -287,7 +287,7 @@ Instaladas em `.claude/skills/` pelo CLI `skills` (`pnpm dlx skills add ... -a c
 - Detalhe expandido: `renderDetail={(row) => <XDetail row={row} />}`; só aparece com o recurso `expanding` ligado.
 - Sem `settings` (ex.: tabela pequena dentro de card), o `DataTable` fica simples: sem barra, sem paginação, só ordenação.
 - Lista paginada pela API: `const table = useDataTableServerState(SETTINGS)`, `table.query` (`Page`, `PageSize`, `Search`) entra no hook do React Query e o `DataTable` recebe `server={table.server(data?.totalCount ?? 0)}`. Busca e paginação passam a ser da API; filtros extras da tela chamam `table.resetPage()` ao mudar.
-- Ações por linha: coluna `actions` com `RowActionsMenu` (botão "⋯"); filtro rápido por situação com contagem: `SegmentedFilter` (valor "todos" = `ALL_FILTER_VALUE`).
+- Ações por linha: coluna com `id: DATA_TABLE_ACTIONS_COLUMN_ID` (`"actions"`) e `RowActionsMenu` (botão "⋯"); filtro rápido por situação com contagem: `SegmentedFilter` (valor "todos" = `ALL_FILTER_VALUE`).
 
 #### Comportamento padrão (já vem do `DataTable`, não reimplementar)
 
@@ -305,10 +305,28 @@ Instaladas em `.claude/skills/` pelo CLI `skills` (`pnpm dlx skills add ... -a c
 - Preferências por tabela (recursos, ordem, colunas ocultas, larguras, itens por página) salvas no navegador pelo `data-table-preferences-store` (validação Zod; campo inválido é descartado sozinho, sem apagar o resto).
 - Mudou o conjunto de recursos do `DataTable`? Atualizar `DATA_TABLE_FEATURE_KEYS`, `DATA_TABLE_FEATURE_OPTIONS`, `resolveDataTableFeatures`, `resetDataTableFeature`, o schema de preferências, os testes e esta seção.
 
+#### Mobile: sempre cards
+
+- **Regra: no mobile (largura < 768px, `useIsMobile`), toda tabela vira lista de cards.** Nunca tabela com rolagem horizontal no celular. Vale para toda tabela, nova ou existente, com ou sem `settings`.
+- Já vem do `DataTable` (`DataTableCardList` → `DataTableCard` → `DataTableCardField`, skeleton `DataTableCardSkeleton`). Nunca criar card próprio por tela nem esconder a tabela com `hidden md:block`.
+- Exceção à regra "responsividade com CSS": aqui a troca é de estrutura (tabela ↔ lista), então é por `useIsMobile`, para não renderizar as duas versões (elementos interativos e IDs duplicados).
+- **Card não é "tabela empilhada": toda tabela nova configura o card** com `meta.card` (`DataTableCardSlot`) nas colunas, pensando no que a pessoa precisa ver primeiro no celular:
+  - `"title"`: o que identifica a linha (produto, pessoa, nome). Sem marcação, é a primeira coluna de dado visível. Quebra em até 2 linhas; subtítulo `text-muted-foreground` da célula fica em peso normal.
+  - `"badge"`: status/situação. Vai logo abaixo do título.
+  - `"highlight"`: 1 a 3 números-chave (preço, estoque, margem, totais). Faixa em destaque com rótulo em caixa alta e valor grande, alinhado à esquerda.
+  - `"field"` (padrão): linha rótulo à esquerda (`text-muted-foreground`) e valor à direita (`font-medium`, `text-foreground`), separadas por divisória. Os 4 primeiros aparecem; o resto fica em "Mais informações (N)", animado.
+  - `"hidden"`: some só no card (ex.: posição num ranking que já vem ordenado, códigos internos).
+- Utilitárias: checkbox à esquerda do título; alfinete e ações (`DATA_TABLE_ACTIONS_COLUMN_ID`) à direita; "Ver detalhes" (`renderDetail`) no rodapé, abrindo dentro do card. Coluna de ações com outro id vira campo no corpo.
+- Toda coluna de dado tem `meta.label`: é o rótulo no card. Sem ele aparece o id da coluna.
+- Visual (não alterar por tela): `rounded-xl`, borda, `shadow-xs`; selecionado com borda e anel `primary`; fixado com borda `primary/30`; "Selecionar todos" numa barra acima da lista; densidade compacta reduz espaçamentos. Tudo com tokens do tema, funcionando no claro e no escuro.
+- Ao criar ou mexer numa tabela, conferir o card em 390px no navegador (claro e escuro): título sem invadir as ações, nada cortado, nada rolando na horizontal.
+- Cabeçalho de card de tela com busca/ação ao lado do título (`CardAction`) desce a ação para baixo do título no mobile (modelo: `top-products-card`).
+
 #### Testes de tabela
 
 - Teste da tela ao lado do componente (ver `products-table/index.test.tsx`): estado inicial, seleção (um, intervalo, página), busca com Enter e com a lupa, `/`, paginação e quantidade por página, abas da engrenagem (Colunas, Exibição e Recursos).
 - Mock de `wait` no teste e `ResizeObserver` com `vi.stubGlobal`.
+- Modo card: `vi.stubGlobal("innerWidth", 375)` (o `matchMedia` já é stub global no `vitest.setup.ts`, como desktop). Modelo: bloco "no celular" em `data-table/index.test.tsx`.
 
 ### Interação
 
@@ -345,8 +363,12 @@ Toda ação relevante do usuário termina com um toast do Sonner (o `<Toaster />
 
 - Catálogo único dos endpoints em `constants/Modules/Core/Api/api-endpoints.ts` (`API_ENDPOINTS.<grupo>.<acao>`: método, caminho, resumo, página e componente de permissão). Endpoint novo da API entra primeiro aqui.
 - Service chama `requestApi(API_ENDPOINTS.x.y, schema, { params, query, body })` (`services/Modules/Core/Api/request-api.ts`): passa pelo repasse `app/api/modules/core/ecomtrack/[...path]`, põe o Bearer da sessão, o `X-Company-Id` do Owner (exceto rotas `platformScope` e `skipCompany`), renova o token em 401 e valida a resposta com Zod. Sessão (login, verify, refresh, logout) tem rotas próprias em `app/api/modules/core/auth/*`, com o refresh em cookie `httpOnly` do front.
-- Toda página que usa endpoints declara as chaves em `PAGE_ENDPOINT_KEYS` (`constants/Modules/Core/Shell/page-endpoints.ts`); é o que o botão `</>` do Owner mostra. Um teste garante que os 83 endpoints estão mapeados.
-- Permissões: `useCan()` → `can(API_ENDPOINTS.x.y.component)` lê `GET /permissions/me` (Owner sempre pode). Sem permissão, `ActionLockTooltip` no botão e `ActionLockedTag` no item de menu; na dúvida (carregando), bloqueia. A API valida de novo (403).
+- Toda página que usa endpoints declara as chaves em `PAGE_ENDPOINT_KEYS` (`constants/Modules/Core/Shell/page-endpoints.ts`); é o que o botão `</>` do Owner mostra. Um teste garante que os 90 endpoints estão mapeados.
+- Menu lateral, paleta de comandos e breadcrumbs vêm 100% de `GET /permissions/menu` (`usePermissionMenu`). Página com `enabled: false` aparece com cadeado e o `PageGuard` manda para `/sem-permissao`; rota que não está no menu mas cai no `[...slug]` vai para `/nao-encontrado`. Ícones vindos da API (nome do Lucide, kebab-case ou PascalCase) são renderizados com `LucideIcon` (`components/Modules/Core/DesignSystem/lucide-icon`, usa `DynamicIcon` de `lucide-react/dynamic`, carrega sob demanda qualquer um dos ícones do Lucide).
+- Permissões de ação: `useCan(API_ENDPOINTS.x.y.page)` → `can(API_ENDPOINTS.x.y.component)` lê `GET /permissions/{page}/components` (Owner e Master recebem tudo liberado). Sem permissão, `ActionLockTooltip` no botão e `ActionLockedTag` no item de menu; na dúvida (carregando), bloqueia. A API valida de novo (403).
+- Tempo real: `PermissionsHub` (montado no `AppShell`) conecta direto na API em `/hubs/permissions` com `@microsoft/signalr`; no evento `PermissionsChanged` invalida menu, componentes e `auth/me`. A URL sai de `ECOMTRACK_API_URL`; em produção a API precisa liberar a origem do front em `Cors:AllowedOrigins`.
+- Preferências do usuário (`/auth/me/preferences`): `PreferencesSync` aplica as salvas na API nos stores de tabela (`table.<id>`) e densidade (`ui.density`) e grava as mudanças com debounce (tabela de volta ao padrão = `DELETE`). Não grava no visualizar como. Tarefas de IA usam `ai.task.<tarefa>`.
+- PIN de segurança: endpoint com `securityPin: "Four" | "Six"` em `API_ENDPOINTS` manda `X-Security-Pin`; em `PIN01`/`PIN03` o `SecurityPinDialog` pede o PIN (guardado só em memória) e refaz a chamada; `PIN02` oferece criar o PIN em Minha conta.
 - Mutação que mexe em lista paginada usa `useOptimisticListMutation` (`hooks/Modules/Core/Api/`).
 - Cache: toda `useQuery` escolhe uma política de `QUERY_CACHE_POLICY` (`constants/Modules/Core/Api/query-cache-policies.ts`) com `...QUERY_CACHE_POLICY.<política>` no começo das opções (um teste falha se faltar). Para escolher, nesta ordem:
   1. O dado nunca muda depois de criado (ex.: registro de auditoria) → `immutable`.
@@ -356,7 +378,7 @@ Toda ação relevante do usuário termina com um toast do Sonner (o `<Toaster />
   - Nova tentativa automática só em falha de rede ou 5xx (`shouldRetryQuery`); 4xx aparece na hora.
 - Owner escolhe a empresa no seletor do header (`company-context-store`); "visualizar como" usa o `view-as-store` (token só de leitura + faixa no topo).
 - E2E (Playwright, pasta `e2e/`): `pnpm e2e:login` pede o código; `E2E_LOGIN_CODE=xxxxxx pnpm e2e:login` grava a sessão; `pnpm e2e` roda tudo numa sessão única, dentro da empresa "E2E Testes Automatizados". Credenciais em `.env.e2e.local` (fora do git).
-  - Cobertura: toda chamada ao BFF durante o E2E é registrada; no fim, `e2e/.coverage/relatorio.md` lista os 83 endpoints com os status recebidos e a execução falha se algum ficou sem resposta válida (sem 5xx nem 429). Endpoint novo precisa de teste E2E.
+  - Cobertura: toda chamada ao BFF durante o E2E é registrada; no fim, `e2e/.coverage/relatorio.md` lista os 90 endpoints com os status recebidos e a execução falha se algum ficou sem resposta válida (sem 5xx nem 429). Endpoint novo precisa de teste E2E.
   - A API limita `/auth/*` a 10 chamadas por minuto por IP (cada página aberta renova a sessão). O E2E espera e repete quando recebe 429 (`e2e/support/retry-rate-limited.ts`), por isso a execução leva alguns minutos.
   - Áreas sem provedor cadastrado na API (hoje Agentes IA e Fornecedores) são testadas pelo aviso na tela e pela recusa (4xx) da API para conexões inexistentes.
 

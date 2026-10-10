@@ -34,7 +34,22 @@ export const API_ENDPOINTS = {
     setPin: { method: "PUT", path: "/auth/me/pin", summary: "Cria ou troca um PIN de segurança" },
   },
   permissions: {
-    mine: { method: "GET", path: "/permissions/me", summary: "Permissões do usuário logado" },
+    menu: { method: "GET", path: "/permissions/menu", summary: "Menu do usuário logado" },
+    components: {
+      method: "GET",
+      path: "/permissions/{code}/components",
+      summary: "Componentes de uma página para o usuário logado",
+    },
+  },
+  preferences: {
+    list: { method: "GET", path: "/auth/me/preferences", summary: "Lista as preferências do usuário logado" },
+    get: { method: "GET", path: "/auth/me/preferences/{key}", summary: "Lê uma preferência do usuário logado" },
+    save: { method: "PUT", path: "/auth/me/preferences/{key}", summary: "Salva uma preferência do usuário logado" },
+    remove: {
+      method: "DELETE",
+      path: "/auth/me/preferences/{key}",
+      summary: "Remove uma preferência do usuário logado",
+    },
   },
   users: {
     list: { method: "GET", path: "/users", summary: "Lista os usuários", page: "usuarios" },
@@ -450,6 +465,10 @@ export const API_ENDPOINTS = {
       page: "fornecedores",
       component: "fornecedores.vercatalogo",
     },
+  },
+  aiTasks: {
+    list: { method: "GET", path: "/ai/tasks", summary: "Lista as tarefas de IA" },
+    generate: { method: "POST", path: "/ai/tasks/{key}/generate", summary: "Gera conteúdo com IA para uma tarefa" },
   },
   auditLogs: {
     list: { method: "GET", path: "/audit-logs", summary: "Lista a auditoria", page: "auditoria" },

@@ -15,7 +15,7 @@ import { useCan } from "@/hooks/Modules/Core/Access/use-can";
 import type { Invite } from "@/schemas/Modules/Administracao/Usuarios/invite-schema";
 
 export function InviteRowActions({ invite }: { invite: Invite }) {
-  const { can } = useCan();
+  const { can } = useCan(API_ENDPOINTS.invites.resend.page);
   const [confirming, setConfirming] = useState(false);
   const name = `${invite.firstName} ${invite.lastName}`;
   const { mutate: resend } = useResendInvite({

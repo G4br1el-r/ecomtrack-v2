@@ -43,8 +43,11 @@ export type DataTableServer = {
   onSearch: (search: string) => void;
 };
 
+export type DataTableCardSlot = "title" | "badge" | "highlight" | "field" | "hidden";
+
 export type DataTableColumnMeta = {
   label?: string;
+  card?: DataTableCardSlot;
 };
 
 export type DataTableColumnLayout = {

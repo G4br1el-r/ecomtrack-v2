@@ -5,7 +5,7 @@ import { PAGE_ENDPOINT_KEYS, SHELL_ENDPOINT_KEYS } from "@/constants/Modules/Cor
 
 import { getPageEndpoints } from "./get-page-endpoints";
 
-const TOTAL_ENDPOINTS = 83;
+const TOTAL_ENDPOINTS = 90;
 const USERS_PAGE_ENDPOINTS = 21;
 
 describe("getPageEndpoints", () => {

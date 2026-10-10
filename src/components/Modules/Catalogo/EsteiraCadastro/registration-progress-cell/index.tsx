@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export function RegistrationProgressCell({ completedSteps }: { completedSteps: number }) {
   const complete = completedSteps >= REGISTRATION_STEPS_TOTAL;
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-24 flex-col gap-1.5">
       <span className="text-xs text-muted-foreground tabular-nums">
         <span className="font-medium text-foreground">{completedSteps}</span> de {REGISTRATION_STEPS_TOTAL} passos
       </span>

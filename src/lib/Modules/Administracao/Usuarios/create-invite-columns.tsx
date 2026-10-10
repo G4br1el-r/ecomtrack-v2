@@ -7,7 +7,10 @@ import { DataTableSortHeader } from "@/components/Modules/Core/DesignSystem/data
 import { DateTimeCell } from "@/components/Modules/Core/DesignSystem/date-time-cell";
 import { Badge } from "@/components/ui/badge";
 import { INVITE_COLUMN_SIZE, INVITE_STATUS_BADGE } from "@/constants/Modules/Administracao/Usuarios/users";
-import { DATA_TABLE_UTILITY_COLUMN_OPTIONS } from "@/constants/Modules/Core/DesignSystem/data-table";
+import {
+  DATA_TABLE_ACTIONS_COLUMN_ID,
+  DATA_TABLE_UTILITY_COLUMN_OPTIONS,
+} from "@/constants/Modules/Core/DesignSystem/data-table";
 import type { Invite } from "@/schemas/Modules/Administracao/Usuarios/invite-schema";
 
 const columnHelper = createColumnHelper<DataTableFeatures, Invite>();
@@ -31,7 +34,7 @@ export function createInviteColumns(): DataTableColumn<Invite>[] {
     }),
     columnHelper.accessor("status", {
       size: INVITE_COLUMN_SIZE.status,
-      meta: { label: "Situação" },
+      meta: { label: "Situação", card: "badge" },
       header: ({ column }) => <DataTableSortHeader column={column} />,
       cell: ({ getValue }) => {
         const status = INVITE_STATUS_BADGE[getValue()];
@@ -58,7 +61,7 @@ export function createInviteColumns(): DataTableColumn<Invite>[] {
     }),
     columnHelper.display({
       ...DATA_TABLE_UTILITY_COLUMN_OPTIONS,
-      id: "actions",
+      id: DATA_TABLE_ACTIONS_COLUMN_ID,
       size: INVITE_COLUMN_SIZE.actions,
       minSize: INVITE_COLUMN_SIZE.actions,
       meta: { label: "Ações" },

@@ -94,7 +94,7 @@ export function IntegrationForm({
                 id={id}
                 field={field}
                 registration={register(`values.${field.name}`)}
-                storedMask={integration?.values[field.name]}
+                storedMask={integration?.values[field.name] ?? undefined}
                 invalid={Boolean(fieldError)}
               />
               <FieldError errors={[fieldError]} />
